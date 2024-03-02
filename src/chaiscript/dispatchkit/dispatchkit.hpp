@@ -461,6 +461,24 @@ namespace chaiscript {
         }
       }
 
+      bool has_global(std::string name) {
+        chaiscript::detail::threading::unique_lock<chaiscript::detail::threading::shared_mutex> l(m_mutex);
+
+        auto it = m_state.m_global_objects.find(name);
+        return m_state.m_global_objects.find(name) != m_state.m_global_objects.end();
+      }
+
+      Boxed_Value get_global(std::string name) {
+        chaiscript::detail::threading::unique_lock<chaiscript::detail::threading::shared_mutex> l(m_mutex);
+
+        auto it = m_state.m_global_objects.find(name);
+        if (m_state.m_global_objects.find(name) != m_state.m_global_objects.end()) {
+          return it->second;
+        } else {
+          throw chaiscript::exception::illegal_name_error(name);
+        }
+      }
+
       /// Updates an existing global shared object or adds a new global shared object if not found
       void set_global(Boxed_Value obj, std::string name) {
         chaiscript::detail::threading::unique_lock<chaiscript::detail::threading::shared_mutex> l(m_mutex);

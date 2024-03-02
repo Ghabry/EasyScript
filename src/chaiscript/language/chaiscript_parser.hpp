@@ -161,6 +161,8 @@ namespace chaiscript {
           set_alphabet(alphabet, detail::keyword_alphabet, c);
         }
         set_alphabet(alphabet, detail::keyword_alphabet, '_');
+        set_alphabet(alphabet, detail::keyword_alphabet, '@'); // EasyRPG added
+        set_alphabet(alphabet, detail::keyword_alphabet, '$'); // EasyRPG added
 
         for (size_t c = '0'; c <= '9'; ++c) {
           set_alphabet(alphabet, detail::int_alphabet, c);
@@ -196,6 +198,8 @@ namespace chaiscript {
           set_alphabet(alphabet, detail::id_alphabet, c);
         }
         set_alphabet(alphabet, detail::id_alphabet, '_');
+        set_alphabet(alphabet, detail::id_alphabet, '@'); // EasyRPG added
+        set_alphabet(alphabet, detail::id_alphabet, '$'); // EasyRPG added
 
         set_alphabet(alphabet, detail::white_alphabet, ' ');
         set_alphabet(alphabet, detail::white_alphabet, '\t');

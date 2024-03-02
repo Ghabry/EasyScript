@@ -236,10 +236,10 @@ namespace chaiscript {
     }
 
   public:
-     
+
     /// \brief Virtual destructor for ChaiScript
     virtual ~ChaiScript_Basic() = default;
-     
+
     /// \brief Constructor for ChaiScript
     /// \param[in] t_lib Standard library to apply to this ChaiScript instance
     /// \param[in] t_modulepaths Vector of paths to search when attempting to load a binary module
@@ -404,6 +404,16 @@ namespace chaiscript {
       Name_Validator::validate_object_name(t_name);
       m_engine.add_global(t_bv, t_name);
       return *this;
+    }
+
+    bool has_global(const std::string &t_name) {
+      Name_Validator::validate_object_name(t_name);
+      return m_engine.has_global(t_name);
+    }
+
+    Boxed_Value get_global(const std::string &t_name) {
+      Name_Validator::validate_object_name(t_name);
+      return m_engine.get_global(t_name);
     }
 
     ChaiScript_Basic &set_global(const Boxed_Value &t_bv, const std::string &t_name) {
