@@ -1,0 +1,79 @@
+/bin/
+/Makefile
+*.a
+*.elf
+*.o
+*~
+*.orig
+*.bak
+
+# cmake
+CMakeFiles/
+CMakeScripts/
+CMakeCache.txt
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
+cmake_install.cmake
+install_manifest.txt
+
+# msvc / Windows
+*.vcxproj*
+*.sdf
+*.ncb
+*.psess
+*.suo
+*.user
+*.vsp*
+*.lib
+*.exe
+*.exp
+*.ilk
+*.pdb
+.vs/
+vcpkg/
+
+# ninja
+.ninja_*
+*.ninja
+
+# IntelliJ
+.idea/
+cmake-build*/
+
+# VS Code
+.vscode/
+.cache/
+compile_commands.json
+build/
+
+# doxygen
+/resources/Doxyfile
+/doc/
+
+# distribution archives
+*.tar.*
+*.zip
+
+# macos
+__MACOSX
+.DS_Store
+
+# Xcode
+/*.xcodeproj
+/*.xcworkspace
+/Debug/
+/Release/
+/MinSizeRel/
+/RelWithDebInfo/
+/*.build/
+
+# flatpak
+/.flatpak-builder
+
+# certificates / signing keys
+*.pem
+*.keystore
+*.jks
