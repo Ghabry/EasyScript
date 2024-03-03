@@ -25,8 +25,10 @@ EasyScript::ChangeFaceGraphic::ChangeFaceGraphic(EasyScript::StringArg value) {
 	string_param.Set(*cmd, value);
 }
 
-void EasyScript::ChangeFaceGraphic::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<ChangeFaceGraphic, ChangeFaceGraphic(StringArg)>(chai, state);
+void EasyScript::ChangeFaceGraphic::Register(State& state) {
+	BindAuto<ChangeFaceGraphic, ChangeFaceGraphic(StringArg)>(state);
+
+	auto& chai = state.chai;
 
 	BindFunctions<ChangeFaceGraphic>(
 		chai,

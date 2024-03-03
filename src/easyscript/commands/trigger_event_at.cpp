@@ -24,6 +24,6 @@ EasyScript::TriggerEventAt::TriggerEventAt() {
 	cmd->SetDefaults(static_cast<Code>(2002), "", { 0, 0, 0, 0 });
 }
 
-void EasyScript::TriggerEventAt::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<TriggerEventAt, TriggerEventAt()>(chai, state);
+void EasyScript::TriggerEventAt::Register(State& state) {
+	BindAuto<TriggerEventAt, TriggerEventAt()>(state);
 }

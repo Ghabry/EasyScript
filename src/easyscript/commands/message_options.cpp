@@ -62,7 +62,7 @@ EasyScript::MessageOptions EasyScript::MessageOptions::Font(EasyScript::StringAr
 	return *this;
 }
 
-void EasyScript::MessageOptions::Register(chaiscript::ChaiScript& chai, State& state) {
+void EasyScript::MessageOptions::Register(State& state) {
 	chaiscript::ModulePtr m = std::make_shared<chaiscript::Module>();
 	chaiscript::utility::add_class<MessageOptions>(*m, "__cls_MessageOptions",
 	{
@@ -92,6 +92,9 @@ void EasyScript::MessageOptions::Register(chaiscript::ChaiScript& chai, State& s
 		}), "bottom"},
 	}
 	);
+
+	auto& chai = state.chai;
+
 	chai.add(m);
 
 	auto o = chai.get_global("@message").get().cast<std::shared_ptr<chaiscript::dispatch::Dynamic_Object>>();

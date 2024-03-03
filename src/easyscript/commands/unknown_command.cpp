@@ -36,7 +36,9 @@ EasyScript::UnknownCommand EasyScript::UnknownCommand::Parameter(std::vector<int
 	return *this;
 }
 
-void EasyScript::UnknownCommand::Register(chaiscript::ChaiScript& chai, State& state) {
+void EasyScript::UnknownCommand::Register(State& state) {
+	auto& chai = state.chai;
+
 	BindConstructors<UnknownCommand, UnknownCommand(int32_t)>(chai, "UnknownCommand");
 	BindFunctions<UnknownCommand>(chai,
 		&UnknownCommand::String, "string",

@@ -29,8 +29,10 @@ EasyScript::PlayBgm::PlayBgm(StringArg value) {
 	string_param.Set(*cmd, value);
 }
 
-void EasyScript::PlayBgm::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<PlayBgm, PlayBgm(StringArg)>(chai, state);
+void EasyScript::PlayBgm::Register(State& state) {
+	BindAuto<PlayBgm, PlayBgm(StringArg)>(state);
+
+	auto& chai = state.chai;
 
 	BindNamespaceFunctions(
 		chai, "music",

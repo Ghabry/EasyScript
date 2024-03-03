@@ -28,8 +28,10 @@ EasyScript::PlaySound::PlaySound(StringArg value) {
 	string_param.Set(*cmd, value);
 }
 
-void EasyScript::PlaySound::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<PlaySound, PlaySound(StringArg)>(chai, state);
+void EasyScript::PlaySound::Register(State& state) {
+	BindAuto<PlaySound, PlaySound(StringArg)>(state);
+
+	auto& chai = state.chai;
 
 	BindNamespaceFunctions(
 		chai, "sound",

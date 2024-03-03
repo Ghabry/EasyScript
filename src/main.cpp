@@ -30,13 +30,14 @@
 #include "easyscript/types.h"
 
 int main() {
-	chaiscript::ChaiScript chai;
-	chai.add(chaiscript::vector_conversion<std::vector<int32_t>>());
-
 	EasyScript::State state;
+	chaiscript::ChaiScript& chai = state.chai;
 	EasyScript::EventCommandList& commands = state.commands;
 
-	EasyScript::EventCommand::RegisterAll(chai, state);
+	chai.add(chaiscript::vector_conversion<std::vector<int32_t>>());
+
+	EasyScript::EventCommand::RegisterAll(state);
+
 
 	chai.eval(R"(
 		@message.show("Msg Line1")

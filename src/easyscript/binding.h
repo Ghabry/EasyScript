@@ -76,9 +76,10 @@ namespace detail {
 	};
 
 	template<typename Class, typename Constructor>
-	void AddNamespaceConstructor(chaiscript::ChaiScript& chai, State& state, std::string ns, const char* fn_name) {
+	void AddNamespaceConstructor(State& state, std::string ns, const char* fn_name) {
 		FunctionArgs<Constructor> c;
 		auto fn = c.template bind<Class>(state);
+		auto& chai = state.chai;
 
 		if (chai.has_global(ns)) {
 			auto o = chai.get_global(ns).get().cast<std::shared_ptr<chaiscript::dispatch::Dynamic_Object>>();
@@ -141,31 +142,29 @@ constexpr void BindNamespaceFunctions(
 
 template<typename Class, typename Constructor, typename... Constructors, typename... Functions>
 void Bind(
-		chaiscript::ChaiScript& chai,
 		EasyScript::State& state,
 		std::string class_name,
 		std::string ns,
 		const char* ns_fn,
 		Functions const&... f) {
 	class_name = "__cls_" + class_name;
+	auto& chai = state.chai;
 	chai.add(chaiscript::user_type<Class>(), class_name);
 
 	detail::AddConstructor<Constructor, Constructors...>(chai, class_name);
 	detail::AddFunction<Class>(chai, f...);
-	detail::AddNamespaceConstructor<Class, Constructor>(chai, state, "@" + ns, ns_fn);
+	detail::AddNamespaceConstructor<Class, Constructor>(state, "@" + ns, ns_fn);
 }
 
 template<typename Class, typename Constructor, typename... Constructors>
-void BindAuto(
-		chaiscript::ChaiScript& chai,
-		EasyScript::State& state) {
+void BindAuto(EasyScript::State& state) {
 
 	Bind<Class, Constructor, Constructors...>(
-		chai, state, Class::name[0], Class::name[1], Class::name[2]);
+		state, Class::name[0], Class::name[1], Class::name[2]);
 
 	if constexpr (requires { Class::param; } ) {
 		for (auto& parameter: Class::param) {
-			chai.add(chaiscript::fun(&detail::SetFn<Class>, parameter), parameter.name);
+			state.chai.add(chaiscript::fun(&detail::SetFn<Class>, parameter), parameter.name);
 		}
 	}
 }

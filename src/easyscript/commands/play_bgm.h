@@ -30,7 +30,7 @@ public:
 
 	std::shared_ptr<EventCommand> cmd = std::make_shared<EventCommand>();
 
-	static void Register(chaiscript::ChaiScript& chai, State& state);
+	static void Register(State& state);
 
 	static constexpr std::array name = { "PlayBgm", "music", "play" };
 

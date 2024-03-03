@@ -64,7 +64,9 @@ EasyScript::ShowMessage EasyScript::ShowMessage::Line(const std::string& value) 
 	return *this;
 }
 
-void EasyScript::ShowMessage::Register(chaiscript::ChaiScript& chai, State& state) {
+void EasyScript::ShowMessage::Register(State& state) {
+	auto& chai = state.chai;
+
 	BindConstructors<ShowMessage, ShowMessage(State&, const std::string&)>(
 		chai, "ShowMessage");
 

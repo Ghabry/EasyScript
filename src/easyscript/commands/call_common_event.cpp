@@ -25,8 +25,8 @@ EasyScript::CallCommonEvent::CallCommonEvent(VariableArg value) {
 	constructor_param.Set(*cmd, value);
 }
 
-void EasyScript::CallCommonEvent::Register(chaiscript::ChaiScript& chai, State& state) {
+void EasyScript::CallCommonEvent::Register(State& state) {
 	BindAuto<CallCommonEvent, CallCommonEvent(VariableArg)>(
-		chai, state
+		state
 	);
 }

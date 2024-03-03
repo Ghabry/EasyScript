@@ -18,10 +18,12 @@
 #pragma once
 
 #include "forward.h"
+#include "chaiscript/chaiscript.hpp"
 
 namespace EasyScript {
 
 struct State {
+	chaiscript::ChaiScript chai;
 	EventCommandList commands;
 	int indent = 0;
 };

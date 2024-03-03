@@ -20,12 +20,22 @@
 #include "easyscript/binding.h"
 #include "easyscript/event_command.h"
 
-EasyScript::ShowChoice::ShowChoice() {
+EasyScript::ShowChoice::ShowChoice(EasyScript::State& state) {
 	cmd->SetDefaults(Code::ShowChoice, "", { 1, 0, 0, 0 });
+
+	auto& chai = state.chai;
+/*
+	chai.add(chaiscript::fun([&](int a) {
+		chai.add(chaiscript::fun([=]() {
+			state.indent--;
+		}), "#block_end");
+	}), "@if");*/
+
+	state.indent++;
 }
 
-void EasyScript::ShowChoice::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<ShowChoice, ShowChoice()>(chai, state);
+void EasyScript::ShowChoice::Register(State& state) {
+	BindAuto<ShowChoice, ShowChoice(State&)>(state);
 }
 
 std::optional<std::string> EasyScript::ShowChoice::StringFromCommand(const EventCommand& command) {
