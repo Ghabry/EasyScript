@@ -59,23 +59,26 @@ namespace detail {
 		//AddConstructor<Constructors...>(chai, class_name); FIXME
 	}
 
-	template<typename Class, typename ConstructorArgType, typename Constructor>
-	void AddNamespaceConstructor(chaiscript::ChaiScript& chai, State& state, std::string ns, const char* fn_name) {
-		auto& commands = state.commands;
-		chaiscript::Boxed_Value fn;
-		if constexpr (std::is_void<ConstructorArgType>()) {
-			fn = chaiscript::var(chaiscript::fun([&]() {
-				auto evt = Class();
-				commands.push_back(evt.cmd);
+	template<typename T>
+	struct FunctionArgs;
+
+	template<typename Ret, typename... Args>
+	struct FunctionArgs<Ret(Args...)> {
+		template<typename Class>
+		chaiscript::Boxed_Value bind(State& state) {
+			chaiscript::Boxed_Value fn = chaiscript::var(chaiscript::fun([&](Args... args) {
+				auto evt = Class(args...);
+				state.commands.push_back(evt.cmd);
 				return evt;
 			}));
-		} else {
-			fn = chaiscript::var(chaiscript::fun([&](ConstructorArgType arg) {
-				auto evt = Class(arg);
-				commands.push_back(evt.cmd);
-				return evt;
-			}));
+			return fn;
 		}
+	};
+
+	template<typename Class, typename Constructor>
+	void AddNamespaceConstructor(chaiscript::ChaiScript& chai, State& state, std::string ns, const char* fn_name) {
+		FunctionArgs<Constructor> c;
+		auto fn = c.template bind<Class>(state);
 
 		if (chai.has_global(ns)) {
 			auto o = chai.get_global(ns).get().cast<std::shared_ptr<chaiscript::dispatch::Dynamic_Object>>();
@@ -136,7 +139,7 @@ constexpr void BindNamespaceFunctions(
 	detail::AddNamespaceFunction(chai, ns, f...);
 }
 
-template<typename Class, typename ConstructorArgType, typename Constructor, typename... Constructors, typename... Functions>
+template<typename Class, typename Constructor, typename... Constructors, typename... Functions>
 void Bind(
 		chaiscript::ChaiScript& chai,
 		EasyScript::State& state,
@@ -149,15 +152,15 @@ void Bind(
 
 	detail::AddConstructor<Constructor, Constructors...>(chai, class_name);
 	detail::AddFunction<Class>(chai, f...);
-	detail::AddNamespaceConstructor<Class, ConstructorArgType, Constructor>(chai, state, "@" + ns, ns_fn);
+	detail::AddNamespaceConstructor<Class, Constructor>(chai, state, "@" + ns, ns_fn);
 }
 
-template<typename Class, typename ConstructorArgType, typename Constructor, typename... Constructors>
+template<typename Class, typename Constructor, typename... Constructors>
 void BindAuto(
 		chaiscript::ChaiScript& chai,
 		EasyScript::State& state) {
 
-	Bind<Class, ConstructorArgType, Constructor, Constructors...>(
+	Bind<Class, Constructor, Constructors...>(
 		chai, state, Class::name[0], Class::name[1], Class::name[2]);
 
 	if constexpr (requires { Class::param; } ) {

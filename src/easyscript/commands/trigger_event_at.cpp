@@ -25,5 +25,5 @@ EasyScript::TriggerEventAt::TriggerEventAt() {
 }
 
 void EasyScript::TriggerEventAt::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<TriggerEventAt, void, TriggerEventAt()>(chai, state);
+	BindAuto<TriggerEventAt, TriggerEventAt()>(chai, state);
 }

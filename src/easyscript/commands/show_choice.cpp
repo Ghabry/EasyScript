@@ -25,7 +25,7 @@ EasyScript::ShowChoice::ShowChoice() {
 }
 
 void EasyScript::ShowChoice::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<ShowChoice, void, ShowChoice()>(chai, state);
+	BindAuto<ShowChoice, ShowChoice()>(chai, state);
 }
 
 std::optional<std::string> EasyScript::ShowChoice::StringFromCommand(const EventCommand& command) {

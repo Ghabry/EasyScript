@@ -29,7 +29,7 @@ EasyScript::PlaySound::PlaySound(StringArg value) {
 }
 
 void EasyScript::PlaySound::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<PlaySound, StringArg, PlaySound(StringArg)>(chai, state);
+	BindAuto<PlaySound, PlaySound(StringArg)>(chai, state);
 
 	BindNamespaceFunctions(
 		chai, "sound",

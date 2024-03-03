@@ -30,7 +30,7 @@ EasyScript::PlayBgm::PlayBgm(StringArg value) {
 }
 
 void EasyScript::PlayBgm::Register(chaiscript::ChaiScript& chai, State& state) {
-	BindAuto<PlayBgm, StringArg, PlayBgm(StringArg)>(chai, state);
+	BindAuto<PlayBgm, PlayBgm(StringArg)>(chai, state);
 
 	BindNamespaceFunctions(
 		chai, "music",
