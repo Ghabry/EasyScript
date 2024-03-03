@@ -29,7 +29,7 @@ namespace EasyScript {
 
 class EventCommand;
 
-std::vector<std::string> FromCommandList(const EventCommandList& commands);
+std::vector<std::string> FromCommandList(const State& state);
 std::vector<std::string> FromCommandList(const std::vector<lcf::rpg::EventCommand>& commands);
 
 std::string FromCommand(const EventCommand& command);

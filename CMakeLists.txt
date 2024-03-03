@@ -21,6 +21,8 @@ add_library(easyscript_lib OBJECT
 	src/easyscript/commands/play_bgm.h
 	src/easyscript/commands/play_sound.cpp
 	src/easyscript/commands/play_sound.h
+	src/easyscript/commands/show_choice.cpp
+	src/easyscript/commands/show_choice.h
 	src/easyscript/commands/show_message.cpp
 	src/easyscript/commands/show_message.h
 	src/easyscript/commands/trigger_event_at.cpp
@@ -34,6 +36,7 @@ add_library(easyscript_lib OBJECT
 	src/easyscript/from_command.h
 	src/easyscript/parameter.cpp
 	src/easyscript/parameter.h
+	src/easyscript/state.h
 	src/easyscript/types.cpp
 	src/easyscript/types.h
 	src/easyscript/utils.cpp

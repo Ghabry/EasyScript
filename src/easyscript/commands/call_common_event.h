@@ -28,7 +28,7 @@ public:
 
 	std::shared_ptr<EventCommand> cmd = std::make_shared<EventCommand>();
 
-	static void Register(chaiscript::ChaiScript& chai, EventCommandList& commands);
+	static void Register(chaiscript::ChaiScript& chai, State& state);
 
 	static constexpr std::array name = { "CallCommonEvent", "battle", "ce" };
 

@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <vector>
+#include <iostream>
 #include <lcf/rpg/eventcommand.h>
 #include <lcf/lmu/reader.h>
 
@@ -25,15 +26,17 @@
 #include "easyscript/all_commands.h"
 #include "easyscript/event_command.h"
 #include "easyscript/from_command.h"
+#include "easyscript/state.h"
 #include "easyscript/types.h"
 
 int main() {
 	chaiscript::ChaiScript chai;
 	chai.add(chaiscript::vector_conversion<std::vector<int32_t>>());
 
-	EasyScript::EventCommandList commands;
+	EasyScript::State state;
+	EasyScript::EventCommandList& commands = state.commands;
 
-	EasyScript::EventCommand::RegisterAll(chai, commands);
+	EasyScript::EventCommand::RegisterAll(chai, state);
 
 	chai.eval(R"(
 		@message.show("Msg Line1")
@@ -100,7 +103,7 @@ int main() {
 		@map.trigger.y($v(222)).x($vv(333))
   	)");*/
 
-	for (auto& line: EasyScript::FromCommandList(commands)) {
+	for (auto& line: EasyScript::FromCommandList(state)) {
 		std::cout << line << "\n";
 	}
 

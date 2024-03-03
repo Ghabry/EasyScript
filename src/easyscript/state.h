@@ -17,27 +17,13 @@
 
 #pragma once
 
-#include <optional>
-#include <string>
-
-#include "easyscript/forward.h"
+#include "forward.h"
 
 namespace EasyScript {
 
-class ShowMessage {
-public:
-	ShowMessage(State& state, const std::string& value);
-	ShowMessage Line(const std::string& value);
-
-	// Last line belonging to the command
-	std::shared_ptr<EventCommand> cmd_end = std::make_shared<EventCommand>();
-
-	static void Register(chaiscript::ChaiScript& chai, State& state);
-
-	static std::optional<std::string> StringFromCommand(EventCommandList& commands);
-
-private:
-	EventCommandList& commands;
+struct State {
+	EventCommandList commands;
+	int indent = 0;
 };
 
 }

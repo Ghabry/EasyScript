@@ -19,6 +19,7 @@
 #include "chaiscript/chaiscript.hpp"
 #include "easyscript/binding.h"
 #include "easyscript/event_command.h"
+#include "easyscript/state.h"
 
 #include <format>
 
@@ -27,14 +28,14 @@ EasyScript::PlaySound::PlaySound(StringArg value) {
 	string_param.Set(*cmd, value);
 }
 
-void EasyScript::PlaySound::Register(chaiscript::ChaiScript& chai, EventCommandList& commands) {
-	BindAuto<PlaySound, StringArg, PlaySound(StringArg)>(chai, commands);
+void EasyScript::PlaySound::Register(chaiscript::ChaiScript& chai, State& state) {
+	BindAuto<PlaySound, StringArg, PlaySound(StringArg)>(chai, state);
 
 	BindNamespaceFunctions(
 		chai, "sound",
 		[&](){
 			auto evt = PlaySound(chaiscript::Boxed_Value(std::make_shared<const std::string>("(OFF)")));
-			commands.push_back(evt.cmd);
+			state.commands.push_back(evt.cmd);
 			return evt;
 		}, "stop"
 	);

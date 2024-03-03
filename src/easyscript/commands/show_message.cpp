@@ -19,12 +19,14 @@
 
 #include "easyscript/binding.h"
 #include "easyscript/event_command.h"
+#include "easyscript/forward.h"
+#include "easyscript/state.h"
 #include "easyscript/utils.h"
 #include <format>
 #include <sstream>
 
-EasyScript::ShowMessage::ShowMessage(EasyScript::EventCommandList& commands, const std::string& value) :
-	commands(commands) {
+EasyScript::ShowMessage::ShowMessage(EasyScript::State& state, const std::string& value) :
+	commands(state.commands) {
 
 	std::istringstream ss(std::string{value});
 	std::string line;
@@ -62,8 +64,8 @@ EasyScript::ShowMessage EasyScript::ShowMessage::Line(const std::string& value) 
 	return *this;
 }
 
-void EasyScript::ShowMessage::Register(chaiscript::ChaiScript& chai, EventCommandList& commands) {
-	BindConstructors<ShowMessage, ShowMessage(EasyScript::EventCommandList&, const std::string&)>(
+void EasyScript::ShowMessage::Register(chaiscript::ChaiScript& chai, State& state) {
+	BindConstructors<ShowMessage, ShowMessage(State&, const std::string&)>(
 		chai, "ShowMessage");
 
 	BindFunctions<ShowMessage>(chai,
@@ -76,13 +78,13 @@ void EasyScript::ShowMessage::Register(chaiscript::ChaiScript& chai, EventComman
 	BindNamespaceFunctions(
 		chai, "message",
 		[&](const std::string& value){
-			auto evt = ShowMessage(commands, value);
+			auto evt = ShowMessage(state, value);
 			return evt;
 		}, "show"
 	);
 }
 
-std::optional<std::string> EasyScript::ShowMessage::StringFromCommand(EventCommandList& commands) {
+std::optional<std::string> EasyScript::ShowMessage::StringFromCommand(EasyScript::EventCommandList& commands) {
 	assert(!commands.empty());
 
 	std::string line = std::format("@message.show(\"{}\")", commands[0]->GetEscapedString());

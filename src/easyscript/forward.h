@@ -27,6 +27,7 @@ namespace chaiscript {
 
 namespace EasyScript {
 	class EventCommand;
+	class State;
 	using Code = lcf::rpg::EventCommand::Code;
 	using EventCommandList = std::vector<std::shared_ptr<EventCommand>>;
 	using VariableArg = const chaiscript::Boxed_Value&;

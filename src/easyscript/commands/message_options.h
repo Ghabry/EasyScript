@@ -39,7 +39,7 @@ public:
 
 	static MessageOptions FromCommand(const EventCommand& command);
 
-	static void Register(chaiscript::ChaiScript& chai, EventCommandList& commands);
+	static void Register(chaiscript::ChaiScript& chai, State& state);
 
 	static constexpr std::array name = { "MessageOptions", "message", "options" };
 };

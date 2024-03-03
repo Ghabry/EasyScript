@@ -18,6 +18,7 @@
 #include "message_options.h"
 #include "chaiscript/chaiscript.hpp"
 #include "easyscript/event_command.h"
+#include "easyscript/state.h"
 
 EasyScript::MessageOptions::MessageOptions() {
 	cmd->SetDefaults(Code::MessageOptions, "", { 0, 0, 0, 0 });
@@ -61,7 +62,7 @@ EasyScript::MessageOptions EasyScript::MessageOptions::Font(EasyScript::StringAr
 	return *this;
 }
 
-void EasyScript::MessageOptions::Register(chaiscript::ChaiScript& chai, EventCommandList& commands) {
+void EasyScript::MessageOptions::Register(chaiscript::ChaiScript& chai, State& state) {
 	chaiscript::ModulePtr m = std::make_shared<chaiscript::Module>();
 	chaiscript::utility::add_class<MessageOptions>(*m, "__cls_MessageOptions",
 	{
@@ -96,7 +97,7 @@ void EasyScript::MessageOptions::Register(chaiscript::ChaiScript& chai, EventCom
 	auto o = chai.get_global("@message").get().cast<std::shared_ptr<chaiscript::dispatch::Dynamic_Object>>();
 	(*o)["options"] = chaiscript::var(chaiscript::fun([&](){
 		auto evt = MessageOptions();
-		commands.push_back(evt.cmd);
+		state.commands.push_back(evt.cmd);
 		return evt;
 	}));
 	//chai.add_global_const(chaiscript::const_var(0), "$face_left");

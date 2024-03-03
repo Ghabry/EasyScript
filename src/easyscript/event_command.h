@@ -34,7 +34,7 @@ public:
 
 	std::string GetEscapedString() const;
 
-	static void RegisterAll(chaiscript::ChaiScript& chai, EventCommandList& commands);
+	static void RegisterAll(chaiscript::ChaiScript& chai, State& state);
 
 	Code code = static_cast<Code>(0);
 	int32_t indent = 0;

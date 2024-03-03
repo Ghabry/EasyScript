@@ -32,7 +32,7 @@
 #include "commands/show_message.h"
 #include "commands/message_options.h"
 #include "commands/change_face_graphic.h"
-// ShowChoice = 10140,
+#include "commands/show_choice.h"
 // InputNumber = 10150,
 // ControlSwitches = 10210,
 // ControlVars = 10220,
@@ -127,9 +127,6 @@
 // ShowBattleAnimation_B = 13260,
 // ConditionalBranch_B = 13310,
 // TerminateBattle = 13410,
-// ShowMessage_2 = 20110,
-// ShowChoiceOption = 20140,
-// ShowChoiceEnd = 20141,
 // VictoryHandler = 20710,
 // EscapeHandler = 20711,
 // DefeatHandler = 20712,

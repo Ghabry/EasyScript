@@ -19,7 +19,7 @@
 #include "chaiscript/chaiscript.hpp"
 #include "easyscript/binding.h"
 #include "easyscript/event_command.h"
-#include "easyscript/forward.h"
+#include "easyscript/state.h"
 
 #include <format>
 #include <optional>
@@ -29,14 +29,14 @@ EasyScript::PlayBgm::PlayBgm(StringArg value) {
 	string_param.Set(*cmd, value);
 }
 
-void EasyScript::PlayBgm::Register(chaiscript::ChaiScript& chai, EventCommandList& commands) {
-	BindAuto<PlayBgm, StringArg, PlayBgm(StringArg)>(chai, commands);
+void EasyScript::PlayBgm::Register(chaiscript::ChaiScript& chai, State& state) {
+	BindAuto<PlayBgm, StringArg, PlayBgm(StringArg)>(chai, state);
 
 	BindNamespaceFunctions(
 		chai, "music",
 		[&](){
 			auto evt = PlayBgm(chaiscript::Boxed_Value(std::make_shared<const std::string>("(OFF)")));
-			commands.push_back(evt.cmd);
+			state.commands.push_back(evt.cmd);
 			return evt;
 		}, "stop"
 	);

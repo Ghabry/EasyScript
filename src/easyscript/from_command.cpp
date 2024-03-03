@@ -17,13 +17,13 @@
 
 #include "from_command.h"
 #include "all_commands.h"
-#include "easyscript/commands/change_face_graphic.h"
-#include "easyscript/commands/message_options.h"
-#include "easyscript/commands/play_bgm.h"
-#include "easyscript/commands/play_sound.h"
-#include "easyscript/commands/unknown_command.h"
-#include "easyscript/forward.h"
+#include "commands/change_face_graphic.h"
+#include "commands/message_options.h"
+#include "commands/play_bgm.h"
+#include "commands/play_sound.h"
+#include "commands/unknown_command.h"
 #include "event_command.h"
+#include "state.h"
 
 #include <format>
 #include <lcf/dbstring.h>
@@ -79,8 +79,9 @@ std::string build_unknown_string(const EasyScript::EventCommand& command) {
 	return *EasyScript::UnknownCommand::StringFromCommand(command);
 }
 
-std::vector<std::string> EasyScript::FromCommandList(const EventCommandList& commands) {
+std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 	std::vector<std::string> lines;
+	auto& commands = state.commands;
 
 	for (size_t i = 0; i < commands.size(); ++i) {
 		auto& command = commands[i];
@@ -97,6 +98,8 @@ std::vector<std::string> EasyScript::FromCommandList(const EventCommandList& com
 				}
 			}
 			lines.push_back(*ShowMessage::StringFromCommand(sub_commands));
+		} else if (command->code == Code::ShowChoice) {
+
 		} else {
 			lines.push_back(FromCommand(*command));
 		}
@@ -117,7 +120,10 @@ std::vector<std::string> EasyScript::FromCommandList(const std::vector<lcf::rpg:
 		list.emplace_back(std::make_shared<EventCommand>(cmd));
 	}
 
-	return FromCommandList(list);
+	State state;
+	state.commands = list;
+
+	return FromCommandList(state);
 }
 
 std::string EasyScript::FromCommand(const EventCommand& command) {
@@ -151,8 +157,9 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 			return build_string<MessageOptions>(command);
 		case Code::ChangeFaceGraphic:
 			return build_string<ChangeFaceGraphic>(command);
-		//case Code::ShowChoice:
-		//	return build_string<ShowChoice>(command);
+		case Code::ShowChoice:
+			assert(false);
+			return {};
 		//case Code::InputNumber:
 		//	return build_string<InputNumber>(command);
 		//case Code::ControlSwitches:
@@ -344,10 +351,12 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 		case Code::ShowMessage_2:
 			assert(false);
 			return {};
-		//case Code::ShowChoiceOption:
-		//	return build_string<ShowChoiceOption>(command);
-		//case Code::ShowChoiceEnd:
-		//	return build_string<ShowChoiceEnd>(command);
+		case Code::ShowChoiceOption:
+			assert(false);
+			return {};
+		case Code::ShowChoiceEnd:
+			assert(false);
+			return {};
 		//case Code::VictoryHandler:
 		//	return build_string<VictoryHandler>(command);
 		//case Code::EscapeHandler:

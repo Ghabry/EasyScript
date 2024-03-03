@@ -19,6 +19,7 @@
 #include "chaiscript/chaiscript.hpp"
 #include "easyscript/binding.h"
 #include "easyscript/event_command.h"
+#include "easyscript/state.h"
 #include <format>
 
 EasyScript::UnknownCommand::UnknownCommand(int32_t value) {
@@ -35,14 +36,14 @@ EasyScript::UnknownCommand EasyScript::UnknownCommand::Parameter(std::vector<int
 	return *this;
 }
 
-void EasyScript::UnknownCommand::Register(chaiscript::ChaiScript& chai, EventCommandList& commands) {
+void EasyScript::UnknownCommand::Register(chaiscript::ChaiScript& chai, State& state) {
 	BindConstructors<UnknownCommand, UnknownCommand(int32_t)>(chai, "UnknownCommand");
 	BindFunctions<UnknownCommand>(chai,
 		&UnknownCommand::String, "string",
 		&UnknownCommand::Parameter, "args",
 		[&](int32_t value){
 			auto evt = UnknownCommand(value);
-			commands.push_back(evt.cmd);
+			state.commands.push_back(evt.cmd);
 			return evt;
 		}, "@command"
 	);

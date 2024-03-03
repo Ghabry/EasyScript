@@ -15,29 +15,19 @@
  * along with EasyScript. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "show_choice.h"
+#include "chaiscript/chaiscript.hpp"
+#include "easyscript/binding.h"
+#include "easyscript/event_command.h"
 
-#include <optional>
-#include <string>
+EasyScript::ShowChoice::ShowChoice() {
+	cmd->SetDefaults(Code::ShowChoice, "", { 1, 0, 0, 0 });
+}
 
-#include "easyscript/forward.h"
+void EasyScript::ShowChoice::Register(chaiscript::ChaiScript& chai, State& state) {
+	BindAuto<ShowChoice, void, ShowChoice()>(chai, state);
+}
 
-namespace EasyScript {
-
-class ShowMessage {
-public:
-	ShowMessage(State& state, const std::string& value);
-	ShowMessage Line(const std::string& value);
-
-	// Last line belonging to the command
-	std::shared_ptr<EventCommand> cmd_end = std::make_shared<EventCommand>();
-
-	static void Register(chaiscript::ChaiScript& chai, State& state);
-
-	static std::optional<std::string> StringFromCommand(EventCommandList& commands);
-
-private:
-	EventCommandList& commands;
-};
+std::optional<std::string> EasyScript::ShowChoice::StringFromCommand(const EventCommand& command) {
 
 }
