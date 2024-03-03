@@ -687,12 +687,33 @@ namespace chaiscript {
       }
 
       Boxed_Value eval_internal(const chaiscript::detail::Dispatch_State &t_ss) const override {
+        // EasyScript: Invoke #block_end when the block scope ends
+        Proxy_Function block_end_fn;
+
+        if (t_ss->function_exists("#block_end")) {
+          auto fn = t_ss->get_function("#block_end", m_loc).second;
+          block_end_fn = (*fn)[0];
+          t_ss->delete_function("#block_end");
+        }
+
         const auto num_children = this->children.size();
         for (size_t i = 0; i < num_children - 1; ++i) {
           this->children[i]->eval(t_ss);
         }
-        return this->children.back()->eval(t_ss);
+
+        Boxed_Value result = this->children.back()->eval(t_ss);
+
+        if (block_end_fn) {
+          std::array<Boxed_Value, 0> params{};
+          t_ss->add(block_end_fn, "#block_end");
+          t_ss->call_function("#block_end", m_loc, Function_Params{params}, t_ss.conversions());
+          t_ss->delete_function("#block_end");
+        }
+
+        return result;
       }
+
+      mutable std::atomic_uint_fast32_t m_loc = {0};
     };
 
     template<typename T>
@@ -703,13 +724,33 @@ namespace chaiscript {
 
       Boxed_Value eval_internal(const chaiscript::detail::Dispatch_State &t_ss) const override {
         chaiscript::eval::detail::Scope_Push_Pop spp(t_ss);
+        // EasyScript: Invoke #block_end when the block scope ends
+        Proxy_Function block_end_fn;
+
+        if (t_ss->function_exists("#block_end")) {
+          auto fn = t_ss->get_function("#block_end", m_loc).second;
+          block_end_fn = (*fn)[0];
+          t_ss->delete_function("#block_end");
+        }
 
         const auto num_children = this->children.size();
         for (size_t i = 0; i < num_children - 1; ++i) {
           this->children[i]->eval(t_ss);
         }
-        return this->children.back()->eval(t_ss);
+
+        Boxed_Value result = this->children.back()->eval(t_ss);
+
+        if (block_end_fn) {
+          std::array<Boxed_Value, 0> params{};
+          t_ss->add(block_end_fn, "#block_end");
+          t_ss->call_function("#block_end", m_loc, Function_Params{params}, t_ss.conversions());
+          t_ss->delete_function("#block_end");
+        }
+
+        return result;
       }
+
+      mutable std::atomic_uint_fast32_t m_loc = {0};
     };
 
     template<typename T>

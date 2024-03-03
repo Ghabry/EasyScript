@@ -406,11 +406,13 @@ namespace chaiscript {
       return *this;
     }
 
+    // EasyScript: Added
     bool has_global(const std::string &t_name) {
       Name_Validator::validate_object_name(t_name);
       return m_engine.has_global(t_name);
     }
 
+    // EasyScript: Added
     Boxed_Value get_global(const std::string &t_name) {
       Name_Validator::validate_object_name(t_name);
       return m_engine.get_global(t_name);

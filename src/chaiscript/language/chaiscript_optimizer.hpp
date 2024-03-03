@@ -111,13 +111,14 @@ namespace chaiscript {
       auto optimize(eval::AST_Node_Impl_Ptr<T> node) {
         if (node->identifier == AST_Node_Type::Block) {
           if (!contains_var_decl_in_scope(*node)) {
-            if (node->children.size() == 1) {
-              return std::move(node->children[0]);
-            } else {
+            // EasyScript: Single statement folding removed because it breaks end of block handling for @if etc.
+            //if (node->children.size() == 1) {
+            //  return std::move(node->children[0]);
+            //} else {
               return chaiscript::make_unique<eval::AST_Node_Impl<T>, eval::Scopeless_Block_AST_Node<T>>(node->text,
                                                                                                         node->location,
                                                                                                         std::move(node->children));
-            }
+            //}
           }
         }
 

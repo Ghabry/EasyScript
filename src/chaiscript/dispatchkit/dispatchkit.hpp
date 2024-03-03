@@ -461,6 +461,7 @@ namespace chaiscript {
         }
       }
 
+      // EasyScript: Added
       bool has_global(std::string name) {
         chaiscript::detail::threading::unique_lock<chaiscript::detail::threading::shared_mutex> l(m_mutex);
 
@@ -468,6 +469,7 @@ namespace chaiscript {
         return m_state.m_global_objects.find(name) != m_state.m_global_objects.end();
       }
 
+      // EasyScript: Added
       Boxed_Value get_global(std::string name) {
         chaiscript::detail::threading::unique_lock<chaiscript::detail::threading::shared_mutex> l(m_mutex);
 
@@ -665,6 +667,27 @@ namespace chaiscript {
         chaiscript::detail::threading::shared_lock<chaiscript::detail::threading::shared_mutex> l(m_mutex);
 
         return get_functions_int().count(name) > 0;
+      }
+
+      // EasyScript: Added
+      void delete_function(std::string_view name) {
+        auto& boxed_functions = get_boxed_functions_int();
+        auto boxed_functions_it = boxed_functions.find(name);
+        if (boxed_functions_it != boxed_functions.data.end()) {
+          boxed_functions.data.erase(boxed_functions_it);
+        }
+
+        auto& function_objects = get_function_objects_int();
+        auto function_objects_it = function_objects.find(name);
+        if (function_objects_it != function_objects.data.end()) {
+          function_objects.data.erase(function_objects_it);
+        }
+
+        auto& functions = get_functions_int();
+        auto function_it = functions.find(name);
+        if (function_it != functions.data.end()) {
+          functions.data.erase(function_it);
+        }
       }
 
       /// \returns All values in the local thread state in the parent scope, or if it doesn't exist,
