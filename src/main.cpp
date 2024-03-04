@@ -38,6 +38,27 @@ int main() {
 
 	EasyScript::EventCommand::RegisterAll(state);
 
+	chai.eval(R"(
+		@message.choice {
+			@case("hello") {
+
+			}
+			@case("hi").cancel {
+
+			}
+			@case("blab") {
+
+			}
+			@cancel() {
+
+			}
+		}
+	)");
+
+	for (auto& line: EasyScript::FromCommandList(state)) {
+		std::cout << line << "\n";
+	}
+
 
 	chai.eval(R"(
 		@message.show("Msg Line1")

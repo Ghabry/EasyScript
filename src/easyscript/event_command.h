@@ -29,6 +29,8 @@ namespace EasyScript {
 class EventCommand {
 public:
 	EventCommand() = default;
+	EventCommand(Code code, int32_t indent);
+	EventCommand(Code code, int32_t indent, std::string string, std::vector<int32_t> parameters);
 
 	void SetDefaults(Code code, std::string_view string, std::initializer_list<int32_t> parameters);
 

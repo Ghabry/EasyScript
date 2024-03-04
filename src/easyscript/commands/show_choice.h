@@ -22,6 +22,8 @@
 
 #include <optional>
 
+class ShowChoiceOption;
+
 namespace EasyScript {
 
 class ShowChoice {

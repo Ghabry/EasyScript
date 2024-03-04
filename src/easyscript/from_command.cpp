@@ -79,12 +79,26 @@ std::string build_unknown_string(const EasyScript::EventCommand& command) {
 	return *EasyScript::UnknownCommand::StringFromCommand(command);
 }
 
+struct CommandState {
+	int show_choice_cancel = -1;
+	int show_choice_child_count = -1;
+};
+
 std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 	std::vector<std::string> lines;
 	auto& commands = state.commands;
 
+	std::vector<CommandState> cmd_states = {};
+
 	for (size_t i = 0; i < commands.size(); ++i) {
 		auto& command = commands[i];
+
+		if (command->code == Code::ShowChoice) {
+			cmd_states.resize(command->indent + 1);
+			auto& cmd_state = cmd_states.back();
+			cmd_state.show_choice_cancel = command->parameters[0] - 1;
+			cmd_state.show_choice_child_count = 0;
+		}
 
 		if (command->code == Code::ShowMessage) {
 			EventCommandList sub_commands = {command};
@@ -98,8 +112,25 @@ std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 				}
 			}
 			lines.push_back(*ShowMessage::StringFromCommand(sub_commands));
-		} else if (command->code == Code::ShowChoice) {
+		} else if (command->code == Code::ShowChoiceOption) {
+			auto& cmd_state = cmd_states[command->indent];
+			std::string line;
+			if (cmd_state.show_choice_child_count > 0) {
+				line = "} ";
+			}
 
+			if (command->parameters[0] == 4) {
+				line += "@cancel";
+			} else {
+				line += std::format("@case(\"{}\")", command->string);
+				if (cmd_state.show_choice_cancel == cmd_state.show_choice_child_count) {
+					line += ".cancel";
+				}
+			}
+			line += " {";
+			lines.push_back(line);
+
+			++cmd_state.show_choice_child_count;
 		} else {
 			lines.push_back(FromCommand(*command));
 		}
@@ -128,8 +159,8 @@ std::vector<std::string> EasyScript::FromCommandList(const std::vector<lcf::rpg:
 
 std::string EasyScript::FromCommand(const EventCommand& command) {
 	switch (command.code) {
-		//case Code::END:
-		//	return build_string<END>(command);
+		case Code::END:
+			return {};
 		case Code::CallCommonEvent:
 			return build_string<CallCommonEvent>(command);
 		//case Code::ForceFlee:
@@ -158,8 +189,7 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 		case Code::ChangeFaceGraphic:
 			return build_string<ChangeFaceGraphic>(command);
 		case Code::ShowChoice:
-			assert(false);
-			return {};
+			return build_string<ShowChoice>(command) + " {";
 		//case Code::InputNumber:
 		//	return build_string<InputNumber>(command);
 		//case Code::ControlSwitches:
@@ -273,7 +303,8 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 		//case Code::Wait:
 		//	return build_string<Wait>(command);
 		case Code::PlayBGM:
-			return build_string<PlayBgm>(command);		//case Code::FadeOutBGM:
+			return build_string<PlayBgm>(command);
+		//case Code::FadeOutBGM:
 		//	return build_string<FadeOutBGM>(command);
 		//case Code::MemorizeBGM:
 		//	return build_string<MemorizeBGM>(command);
@@ -355,8 +386,7 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 			assert(false);
 			return {};
 		case Code::ShowChoiceEnd:
-			assert(false);
-			return {};
+			return "}";
 		//case Code::VictoryHandler:
 		//	return build_string<VictoryHandler>(command);
 		//case Code::EscapeHandler:

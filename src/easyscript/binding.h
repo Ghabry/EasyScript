@@ -120,7 +120,7 @@ constexpr void BindClass(
 
 template<typename Class, typename Constructor, typename... Constructors>
 constexpr void BindConstructors(chaiscript::ChaiScript& chai, std::string class_name) {
-	class_name = "__cls_" + class_name;
+	class_name = "#" + class_name;
     chai.add(chaiscript::user_type<Class>(), class_name);
 	detail::AddConstructor<Constructor, Constructors...>(chai, class_name);
 }
@@ -147,7 +147,7 @@ void Bind(
 		std::string ns,
 		const char* ns_fn,
 		Functions const&... f) {
-	class_name = "__cls_" + class_name;
+	class_name = "#" + class_name;
 	auto& chai = state.chai;
 	chai.add(chaiscript::user_type<Class>(), class_name);
 

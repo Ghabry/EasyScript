@@ -24,6 +24,22 @@
 #include <memory>
 #include <stdexcept>
 
+EasyScript::EventCommand::EventCommand(Code code, int32_t indent)
+	: code(code),
+	  indent(indent)
+{
+
+}
+
+EasyScript::EventCommand::EventCommand(Code code, int32_t indent, std::string string, std::vector<int32_t> parameters)
+	: code(code),
+	  indent(indent),
+	  string(std::move(string)),
+	  parameters(std::move(parameters))
+{
+
+}
+
 void EasyScript::EventCommand::SetDefaults(Code code, std::string_view string, std::initializer_list<int32_t> parameters) {
 	this->code = code;
 	this->string = string;
@@ -62,7 +78,7 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	ShowMessage::Register(state);
 	MessageOptions::Register(state);
 	ChangeFaceGraphic::Register(state);
-	// ShowChoice::Register(state);
+	ShowChoice::Register(state);
 	// InputNumber::Register(state);
 	// ControlSwitches::Register(state);
 	// ControlVars::Register(state);
