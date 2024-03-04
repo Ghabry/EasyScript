@@ -15,6 +15,14 @@
  * along with EasyScript. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Todo: Branching event commands
+// ShowChoice, ShowChoiceCommand, EndChoice <- DONE
+// ConditionalBranch, ElseBranch, EndBranch
+// CondionalBranch_B, ElseBranch_B, EndBranch_B
+// Loop, EndLoop
+// EnemyEncounter, VictoryHandler, EscapeHandler, DefeatHandler, EndBattle
+// OpenShop, Transaction, NoTransaction, EndShop
+
 #include "from_command.h"
 #include "all_commands.h"
 #include "commands/change_face_graphic.h"
