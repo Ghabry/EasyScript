@@ -95,6 +95,7 @@ struct CommandState {
 std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 	std::vector<std::string> lines;
 	auto& commands = state.commands;
+	const EventCommand* parent;
 
 	std::vector<CommandState> cmd_states = {};
 
@@ -102,10 +103,7 @@ std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 		auto& command = commands[i];
 
 		if (command->code == Code::ShowChoice) {
-			cmd_states.resize(command->indent + 1);
-			auto& cmd_state = cmd_states.back();
-			cmd_state.show_choice_cancel = command->parameters[0] - 1;
-			cmd_state.show_choice_child_count = 0;
+			parent = &*command;
 		}
 
 		if (command->code == Code::ShowMessage) {
@@ -121,24 +119,7 @@ std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 			}
 			lines.push_back(*ShowMessage::StringFromCommand(sub_commands));
 		} else if (command->code == Code::ShowChoiceOption) {
-			auto& cmd_state = cmd_states[command->indent];
-			std::string line;
-			if (cmd_state.show_choice_child_count > 0) {
-				line = "} ";
-			}
-
-			if (command->parameters[0] == 4) {
-				line += "@cancel";
-			} else {
-				line += std::format("@case(\"{}\")", command->string);
-				if (cmd_state.show_choice_cancel == cmd_state.show_choice_child_count) {
-					line += ".cancel";
-				}
-			}
-			line += " {";
-			lines.push_back(line);
-
-			++cmd_state.show_choice_child_count;
+			lines.push_back(*ShowChoiceOption::StringFromCommand(commands, i, *parent));
 		} else {
 			lines.push_back(FromCommand(*command));
 		}

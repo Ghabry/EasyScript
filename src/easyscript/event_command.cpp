@@ -19,6 +19,8 @@
 #include "chaiscript/chaiscript.hpp"
 #include "all_commands.h"
 #include "commands/unknown_command.h"
+#include "easyscript/binding.h"
+#include "easyscript/commands/show_choice_option.h"
 #include "state.h"
 #include "types.h"
 #include <memory>
@@ -65,7 +67,7 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	RegisterTypes(chai);
 
 	// END::Register(state);
-	CallCommonEvent::Register(state);
+	BindAuto<CallCommonEvent, CallCommonEvent(State&, VariableArg)>(state);
 	// ForceFlee::Register(state);
 	// EnableCombo::Register(state);
 	// ChangeClass::Register(state);
@@ -79,6 +81,7 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	MessageOptions::Register(state);
 	ChangeFaceGraphic::Register(state);
 	ShowChoice::Register(state);
+	ShowChoiceOption::Register(state);
 	// InputNumber::Register(state);
 	// ControlSwitches::Register(state);
 	// ControlVars::Register(state);
@@ -217,6 +220,7 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	// Maniac_AddMoveRoute::Register(state);
 	// Maniac_EditTile::Register(state);
 	// Maniac_ControlTextProcessing::Register(state);
-	TriggerEventAt::Register(state);
+	BindAuto<TriggerEventAt, TriggerEventAt(State&)>(state);
+
 	UnknownCommand::Register(state);
 }

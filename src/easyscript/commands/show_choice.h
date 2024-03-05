@@ -19,24 +19,20 @@
 
 #include "easyscript/forward.h"
 #include "easyscript/parameter.h"
+#include "command_base.h"
 
 #include <optional>
 
-class ShowChoiceOption;
-
 namespace EasyScript {
 
-class ShowChoice {
+class ShowChoice : public CommandBase<ShowChoice> {
 public:
 	ShowChoice(EasyScript::State& state);
-
-	std::shared_ptr<EventCommand> cmd = std::make_shared<EventCommand>();
 
 	static void Register(State& state);
 
 	static constexpr std::array name = { "ShowChoice", "message", "choice" };
-
-	static std::optional<std::string> StringFromCommand(const EventCommand& command);
+	static constexpr Code code = Code::ShowChoice;
 };
 
 }

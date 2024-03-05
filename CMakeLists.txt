@@ -11,21 +11,22 @@ set(CMAKE_CXX_EXTENSIONS ON)
 add_library(easyscript_lib OBJECT
 	src/easyscript/all_commands.h
 	src/easyscript/binding.h
-	src/easyscript/commands/call_common_event.cpp
 	src/easyscript/commands/call_common_event.h
 	src/easyscript/commands/change_face_graphic.cpp
 	src/easyscript/commands/change_face_graphic.h
+	src/easyscript/commands/command_base.h
 	src/easyscript/commands/message_options.cpp
 	src/easyscript/commands/message_options.h
 	src/easyscript/commands/play_bgm.cpp
 	src/easyscript/commands/play_bgm.h
 	src/easyscript/commands/play_sound.cpp
 	src/easyscript/commands/play_sound.h
+	src/easyscript/commands/show_choice_option.cpp
+	src/easyscript/commands/show_choice_option.h
 	src/easyscript/commands/show_choice.cpp
 	src/easyscript/commands/show_choice.h
 	src/easyscript/commands/show_message.cpp
 	src/easyscript/commands/show_message.h
-	src/easyscript/commands/trigger_event_at.cpp
 	src/easyscript/commands/trigger_event_at.h
 	src/easyscript/commands/unknown_command.cpp
 	src/easyscript/commands/unknown_command.h

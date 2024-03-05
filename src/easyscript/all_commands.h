@@ -33,6 +33,7 @@
 #include "commands/message_options.h"
 #include "commands/change_face_graphic.h"
 #include "commands/show_choice.h"
+#include "commands/show_choice_option.h"
 // InputNumber = 10150,
 // ControlSwitches = 10210,
 // ControlVars = 10220,

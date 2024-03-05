@@ -17,15 +17,31 @@
 
 #pragma once
 
-#include "forward.h"
-#include "chaiscript/chaiscript.hpp"
+#include "easyscript/commands/command_base.h"
+#include "easyscript/forward.h"
+#include "easyscript/parameter.h"
+
+#include <optional>
 
 namespace EasyScript {
 
-struct State {
-	int indent = 0;
-	EventCommandList commands;
-	chaiscript::ChaiScript chai;
+class ShowChoiceOption : public CommandBase<ShowChoiceOption> {
+public:
+	ShowChoiceOption(EasyScript::State& state, const std::string& label, bool is_cancel);
+
+	ShowChoiceOption Cancel();
+
+	static void Register(State& state);
+
+	static constexpr std::array name = { "ShowChoiceOption", "message", "choice" };
+	static constexpr Code code = Code::ShowChoiceOption;
+
+	static std::optional<std::string> StringFromCommand(const EventCommandList& commands, size_t index, const EventCommand& parent);
+
+private:
+	int child_num = 0;
+	bool is_cancel;
+	EasyScript::EventCommand* parent = nullptr;
 };
 
 }

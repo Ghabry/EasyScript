@@ -17,21 +17,20 @@
 
 #pragma once
 
+#include "easyscript/commands/command_base.h"
 #include "easyscript/forward.h"
 #include "easyscript/parameter.h"
 
 namespace EasyScript {
 
-class CallCommonEvent {
+class CallCommonEvent : public CommandBase<CallCommonEvent> {
 public:
-	CallCommonEvent(VariableArg value);
-
-	std::shared_ptr<EventCommand> cmd = std::make_shared<EventCommand>();
-
-	static void Register(State& state);
+	CallCommonEvent(State& state, VariableArg value) : CommandBase<CallCommonEvent>(state, value) {};
 
 	static constexpr std::array name = { "CallCommonEvent", "battle", "ce" };
+	static constexpr Code code = Code::CallCommonEvent;
 
+	static constexpr std::array param_default = std::to_array<uint32_t>({0});
 	static constexpr const Parameter constructor_param = {"event", 1, 0, 1};
 };
 

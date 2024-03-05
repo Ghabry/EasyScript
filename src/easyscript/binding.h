@@ -21,6 +21,7 @@
 #include "parameter.h"
 
 #include "chaiscript/chaiscript.hpp"
+#include "easyscript/commands/command_base.h"
 #include "easyscript/state.h"
 
 #include <type_traits>
@@ -62,16 +63,25 @@ namespace detail {
 	template<typename T>
 	struct FunctionArgs;
 
-	template<typename Ret, typename... Args>
-	struct FunctionArgs<Ret(Args...)> {
+	template<typename Ret, typename FirstArg, typename... Args>
+	struct FunctionArgs<Ret(FirstArg, Args...)> {
 		template<typename Class>
 		chaiscript::Boxed_Value bind(State& state) {
-			chaiscript::Boxed_Value fn = chaiscript::var(chaiscript::fun([&](Args... args) {
-				auto evt = Class(args...);
-				state.commands.push_back(evt.cmd);
-				return evt;
-			}));
-			return fn;
+			if constexpr (std::is_same_v<FirstArg, State&>) {
+				chaiscript::Boxed_Value fn = chaiscript::var(chaiscript::fun([&](Args... args) {
+					auto evt = Class(state, args...);
+					state.commands.push_back(evt.cmd);
+					return evt;
+				}));
+				return fn;
+			} else {
+				chaiscript::Boxed_Value fn = chaiscript::var(chaiscript::fun([&](FirstArg arg, Args... args) {
+					auto evt = Class(arg, args...);
+					state.commands.push_back(evt.cmd);
+					return evt;
+				}));
+				return fn;
+			}
 		}
 	};
 
