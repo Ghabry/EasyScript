@@ -54,7 +54,7 @@ std::string EasyScript::EventCommand::GetEscapedString() const {
 	out.reserve(this->string.size());
 
 	for (char ch: string) {
-		if (ch == '\\') {
+		if (ch == '\\' || ch == '"') {
 			out += '\\';
 		}
 		out += ch;

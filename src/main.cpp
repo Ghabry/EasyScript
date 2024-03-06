@@ -16,6 +16,7 @@
  */
 
 
+#include <format>
 #include <memory>
 #include <vector>
 #include <iostream>
@@ -23,6 +24,7 @@
 #include <lcf/lmu/reader.h>
 
 #include "chaiscript/chaiscript.hpp"
+#include "chaiscript/language/chaiscript_common.hpp"
 #include "easyscript/all_commands.h"
 #include "easyscript/event_command.h"
 #include "easyscript/from_command.h"
@@ -38,105 +40,81 @@ int main() {
 
 	EasyScript::EventCommand::RegisterAll(state);
 
-	chai.eval(R"(
-		@party.gold += 10
+	for (int i = 0; i < 100; ++i) {
+		auto map = lcf::LMU_Reader::Load(std::format("testgame/TestGame-2000/Map00{:02}.lmu", i));
 
-		@party.gold -= $v(10)
-	)");
-
-	for (auto& line: EasyScript::FromCommandList(state)) {
-		std::cout << line << "\n";
-	}
-
-	chai.eval(R"(
-		@message.choice {
-			@case("hello") {
-
-			}
-			@case("hi").cancel {
-
-			}
-			@case("blab") {
-
-			}
-			@cancel() {
-
-			}
+		if (!map) {
+			continue;
 		}
-	)");
 
-	for (auto& line: EasyScript::FromCommandList(state)) {
-		std::cout << line << "\n";
-	}
+		std::cout << "Map " << i << "\n";
 
+		for (auto& event: map->events) {
+			for (auto& page: event.pages) {
+				std::cout << std::format("{} (id={}, page={})\n", lcf::ToString(event.name), event.ID, page.ID);
 
-	chai.eval(R"(
-		@message.show("Msg Line1")
-			.line("Msg Line2") {
-			@message.show("Msg2 Line1")
-				.line("Msg2 Line2")
-		}
-	)");
+				bool has_error = false;
+				auto error_fn = [&](std::string_view error_msg, auto left, auto right) {
+					std::cout << std::format("{} (id={}, page={}) {}: {} != {}\n", lcf::ToString(event.name), event.ID, page.ID, error_msg, left, right);
+					has_error = true;
+				};
 
-	auto map = lcf::LMU_Reader::Load("Map0001.lmu");
-
-	int event_id = 1;
-	int page_id = 1;
-	std::string event_name = "EV0002";
-
-	for (auto& events: map->events) {
-		if (events.name == event_name) {
-			for (auto& page: events.pages) {
-				if (page.ID == page_id) {
-					for (auto& line: EasyScript::FromCommandList(page.event_commands)) {
-						std::cout << line << "\n";
+				state.commands = {};
+				auto event_lines = EasyScript::FromCommandList(page.event_commands);
+				for (auto& line: event_lines) {
+					//std::cout << line << "\n";
+					try {
+						chai.eval(line);
+					} catch (chaiscript::exception::eval_error& e) {
+						std::cout << std::format("{}: {}", e.pretty_print(), line);
+						return 1;
 					}
+				}
+
+				if (page.event_commands.size() != state.commands.size()) {
+					error_fn("Size mismatch", page.event_commands.size(), state.commands.size());
+				}
+
+				size_t max_value = std::min(page.event_commands.size(), state.commands.size());
+				for (size_t i = 0; i < max_value; ++i) {
+					const auto& orig = page.event_commands[i];
+					const auto& gen = state.commands[i];
+
+					if (orig.code != static_cast<int32_t>(gen->code)) {
+						error_fn(std::format("Code mismatch @ line {}", i), orig.code, static_cast<int32_t>(gen->code));
+					}
+
+					if (orig.indent != gen->indent) {
+						error_fn(std::format("Indent mismatch @ line {}", i), orig.indent, gen->indent);
+					}
+
+					if (orig.string != gen->string) {
+						error_fn(std::format("String mismatch @ line {}", i), lcf::ToString(orig.string), gen->string);
+					}
+
+					if (std::vector<int32_t>(orig.parameters.begin(), orig.parameters.end()) != gen->parameters) {
+						std::string left = "[";
+						for (auto& p: orig.parameters) {
+							left += std::to_string(p) + ",";
+						}
+						left.pop_back();
+						left += "]";
+
+						std::string right = "[";
+						for (auto& p: gen->parameters) {
+							right += std::to_string(p) + ",";
+						}
+						right.pop_back();
+						right += "]";
+						error_fn(std::format("Parameter mismatch @ line {}", i + 1), left, right);
+					}
+				}
+
+				if (has_error) {
+					return 1;
 				}
 			}
 		}
-	}
-
-	chai.eval(R"(
-		@message.show("XTesting message speed:")
-			.line("\\s[1]Speed 1A") {
-			@message.show("XTesting message speed:")
-				.line("\\s[1]Speed 1A")
-		}
-		@message.show("YTesting message speed:")
-			.line("\\s[2]Speed 2B")
-		@command(123).string("Alex").args([1,2,3])
-		@command(345).string("Brian").args([100])
-	)");
-
-	/*chai.eval(R"(
-		@battle.ce(10)
-		@battle.ce($v(11))
-		@battle.ce($vv(12))
-
-		@music.play("Ship1").fadein(100)
-		@music.play($t(100)).fadein($v(200)).tempo($vv(50)).balance(30).fadein(200)
-		@music.stop
-		@music.play($tv(200))
-
-		@sound.play("Ship1")
-		@sound.play($t(100)).tempo($vv(50)).balance(30)
-		@sound.stop
-		@sound.play($tv(200))
-
-		@message.show("Hello").newline().line("World")
-		@message.face("Actor2").left
-
-		@message.options.top.font("A", 1).size(100, 200)
-		@message.options.center.font("A", 1).size(100, 200)
-		@message.options.bottom.font($t(42), 1).size(100, 200)
-
-		@map.trigger.x(123).y(0)
-		@map.trigger.x(123).y(345)
-		@map.trigger.y($v(222)).x($vv(333))
-  	)");*/
-
-	for (auto& line: EasyScript::FromCommandList(state)) {
-		std::cout << line << "\n";
 	}
 
 	return 0;

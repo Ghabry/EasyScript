@@ -77,3 +77,6 @@ __MACOSX
 *.pem
 *.keystore
 *.jks
+
+# testing
+testgame*/
