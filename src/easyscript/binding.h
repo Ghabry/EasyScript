@@ -91,13 +91,19 @@ namespace detail {
 		auto fn = c.template bind<Class>(state);
 		auto& chai = state.chai;
 
-		if (chai.has_global(ns)) {
-			auto o = chai.get_global(ns).get().cast<std::shared_ptr<chaiscript::dispatch::Dynamic_Object>>();
-			(*o)[fn_name] = fn;
+		ns = "@" + ns;
+
+		if (fn_name == nullptr || strlen(fn_name) == 0) {
+			chai.add(fn, ns);
 		} else {
-			chaiscript::dispatch::Dynamic_Object o;
-			o[fn_name] = fn;
-			chai.set_global(chaiscript::var(o), ns);
+			if (chai.has_global(ns)) {
+				auto o = chai.get_global(ns).get().cast<std::shared_ptr<chaiscript::dispatch::Dynamic_Object>>();
+				(*o)[fn_name] = fn;
+			} else {
+				chaiscript::dispatch::Dynamic_Object o;
+				o[fn_name] = fn;
+				chai.set_global(chaiscript::var(o), ns);
+			}
 		}
 	}
 
@@ -151,30 +157,23 @@ constexpr void BindNamespaceFunctions(
 }
 
 template<typename Class, typename Constructor, typename... Constructors, typename... Functions>
-void Bind(
-		EasyScript::State& state,
-		std::string class_name,
-		std::string ns,
-		const char* ns_fn,
-		Functions const&... f) {
-	class_name = "#" + class_name;
+void Bind(EasyScript::State& state, Functions const&... f) {
+	std::string class_name = std::string("#") + Class::name[0];
 	auto& chai = state.chai;
+
 	chai.add(chaiscript::user_type<Class>(), class_name);
 
 	detail::AddConstructor<Constructor, Constructors...>(chai, class_name);
 	detail::AddFunction<Class>(chai, f...);
-	detail::AddNamespaceConstructor<Class, Constructor>(state, "@" + ns, ns_fn);
-}
 
-template<typename Class, typename Constructor, typename... Constructors>
-void BindAuto(EasyScript::State& state) {
+	std::string ns = Class::name.size() >= 2 ? Class::name[1] : "";
+	const char* ns_fn = Class::name.size() >= 3 ? Class::name[2] : nullptr;
 
-	Bind<Class, Constructor, Constructors...>(
-		state, Class::name[0], Class::name[1], Class::name[2]);
+	detail::AddNamespaceConstructor<Class, Constructor>(state, ns, ns_fn);
 
 	if constexpr (requires { Class::param; } ) {
 		for (auto& parameter: Class::param) {
-			state.chai.add(chaiscript::fun(&detail::SetFn<Class>, parameter), parameter.name);
+			chai.add(chaiscript::fun(&detail::SetFn<Class>, parameter), parameter.name);
 		}
 	}
 }

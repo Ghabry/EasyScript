@@ -24,15 +24,17 @@
 
 namespace EasyScript {
 
-class UnknownCommand : public CommandBase<UnknownCommand> {
+class Label : public CommandBase<Label> {
 public:
-	UnknownCommand(State& state, int32_t value) : CommandBase<UnknownCommand>(state) {}
+	Label(State& state, VariableArg value) : CommandBase<Label>(state, value) {}
 
-	UnknownCommand String(std::string string);
-	UnknownCommand Parameter(std::vector<int32_t> parameters);
+	Label Goto();
 
-	static constexpr std::array name = { "UnknownCommand" };
-	static constexpr Code code = static_cast<Code>(-1);
+	static constexpr std::array name = { "Label", "label" };
+	static constexpr Code code = Code::Label;
+
+	static constexpr std::array param_default = std::to_array<uint32_t>({1});
+	static constexpr const Parameter constructor_param = {"label", 1, 0, 1};
 
 	static void Register(State& state);
 

@@ -15,28 +15,31 @@
  * along with EasyScript. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "label.h"
+#include "chaiscript/chaiscript.hpp"
+#include "easyscript/binding.h"
+#include "easyscript/event_command.h"
+#include "easyscript/state.h"
+#include <format>
 
-#include "easyscript/commands/command_base.h"
-#include "easyscript/forward.h"
-#include "easyscript/parameter.h"
-#include <optional>
+void EasyScript::Label::Register(State& state) {
+	Bind<Label, Label(State&, VariableArg)>(state,
+		&Label::Goto, "goto");
+}
 
-namespace EasyScript {
+EasyScript::Label EasyScript::Label::Goto() {
+	cmd->code = Code::JumpToLabel;
 
-class UnknownCommand : public CommandBase<UnknownCommand> {
-public:
-	UnknownCommand(State& state, int32_t value) : CommandBase<UnknownCommand>(state) {}
+	return *this;
+}
 
-	UnknownCommand String(std::string string);
-	UnknownCommand Parameter(std::vector<int32_t> parameters);
+std::optional<std::string> EasyScript::Label::StringFromCommand(const EventCommand& command) {
+	std::string line = std::format("@{}", name[1]);
+	line += constructor_param.ToString(command);
 
-	static constexpr std::array name = { "UnknownCommand" };
-	static constexpr Code code = static_cast<Code>(-1);
+	if (command.code == Code::JumpToLabel) {
+		line += ".goto";
+	}
 
-	static void Register(State& state);
-
-	static std::optional<std::string> StringFromCommand(const EventCommand& command);
-};
-
+	return line;
 }

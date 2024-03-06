@@ -26,7 +26,7 @@ EasyScript::ChangeFaceGraphic::ChangeFaceGraphic(EasyScript::StringArg value) {
 }
 
 void EasyScript::ChangeFaceGraphic::Register(State& state) {
-	BindAuto<ChangeFaceGraphic, ChangeFaceGraphic(StringArg)>(state);
+	Bind<ChangeFaceGraphic, ChangeFaceGraphic(StringArg)>(state);
 
 	auto& chai = state.chai;
 

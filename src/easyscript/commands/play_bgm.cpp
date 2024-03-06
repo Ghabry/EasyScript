@@ -30,7 +30,7 @@ EasyScript::PlayBgm::PlayBgm(StringArg value) {
 }
 
 void EasyScript::PlayBgm::Register(State& state) {
-	BindAuto<PlayBgm, PlayBgm(StringArg)>(state);
+	Bind<PlayBgm, PlayBgm(StringArg)>(state);
 
 	auto& chai = state.chai;
 

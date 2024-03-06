@@ -42,7 +42,7 @@ public:
 	}
 
 	CommandBase(EasyScript::State& state, VariableArg value)
-			requires requires { static_cast<T*>(this)->constructor_param; } {
+			requires requires { static_cast<T*>(this)->constructor_param; } : CommandBase(state) {
 		static_cast<T*>(this)->constructor_param.Set(*cmd, value);
 	}
 

@@ -15,6 +15,8 @@ add_library(easyscript_lib OBJECT
 	src/easyscript/commands/change_face_graphic.cpp
 	src/easyscript/commands/change_face_graphic.h
 	src/easyscript/commands/command_base.h
+	src/easyscript/commands/label.cpp
+	src/easyscript/commands/label.h
 	src/easyscript/commands/message_options.cpp
 	src/easyscript/commands/message_options.h
 	src/easyscript/commands/play_bgm.cpp

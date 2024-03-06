@@ -22,10 +22,6 @@
 #include "easyscript/state.h"
 #include <format>
 
-EasyScript::UnknownCommand::UnknownCommand(int32_t value) {
-	cmd->SetDefaults(static_cast<Code>(value), "", { });
-}
-
 EasyScript::UnknownCommand EasyScript::UnknownCommand::String(std::string string) {
 	cmd->string = string;
 	return *this;
@@ -37,18 +33,9 @@ EasyScript::UnknownCommand EasyScript::UnknownCommand::Parameter(std::vector<int
 }
 
 void EasyScript::UnknownCommand::Register(State& state) {
-	auto& chai = state.chai;
-
-	BindConstructors<UnknownCommand, UnknownCommand(int32_t)>(chai, "UnknownCommand");
-	BindFunctions<UnknownCommand>(chai,
+	Bind<UnknownCommand, UnknownCommand(State&, int32_t)>(state,
 		&UnknownCommand::String, "string",
-		&UnknownCommand::Parameter, "args",
-		[&](int32_t value){
-			auto evt = UnknownCommand(value);
-			state.commands.push_back(evt.cmd);
-			return evt;
-		}, "@command"
-	);
+		&UnknownCommand::Parameter, "args");
 }
 
 std::optional<std::string> EasyScript::UnknownCommand::StringFromCommand(const EventCommand& command) {

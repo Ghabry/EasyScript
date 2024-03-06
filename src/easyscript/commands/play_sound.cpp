@@ -29,7 +29,7 @@ EasyScript::PlaySound::PlaySound(StringArg value) {
 }
 
 void EasyScript::PlaySound::Register(State& state) {
-	BindAuto<PlaySound, PlaySound(StringArg)>(state);
+	Bind<PlaySound, PlaySound(StringArg)>(state);
 
 	auto& chai = state.chai;
 

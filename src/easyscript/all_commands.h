@@ -110,8 +110,7 @@
 // OpenMainMenu = 11950,
 // ChangeMainMenuAccess = 11960,
 // ConditionalBranch = 12010,
-// Label = 12110,
-// JumpToLabel = 12120,
+#include "commands/label.h"
 // Loop = 12210,
 // BreakLoop = 12220,
 // EndEventProcessing = 12310,

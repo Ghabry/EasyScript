@@ -331,10 +331,9 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 		//	return build_string<ChangeMainMenuAccess>(command);
 		//case Code::ConditionalBranch:
 		//	return build_string<ConditionalBranch>(command);
-		//case Code::Label:
-		//	return build_string<Label>(command);
-		//case Code::JumpToLabel:
-		//	return build_string<JumpToLabel>(command);
+		case Code::Label:
+		case Code::JumpToLabel:
+			return build_string<Label>(command);
 		//case Code::Loop:
 		//	return build_string<Loop>(command);
 		//case Code::BreakLoop:

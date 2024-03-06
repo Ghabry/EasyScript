@@ -67,7 +67,7 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	RegisterTypes(chai);
 
 	// END::Register(state);
-	BindAuto<CallCommonEvent, CallCommonEvent(State&, VariableArg)>(state);
+	Bind<CallCommonEvent, CallCommonEvent(State&, VariableArg)>(state);
 	// ForceFlee::Register(state);
 	// EnableCombo::Register(state);
 	// ChangeClass::Register(state);
@@ -158,8 +158,7 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	// OpenMainMenu::Register(state);
 	// ChangeMainMenuAccess::Register(state);
 	// ConditionalBranch::Register(state);
-	// Label::Register(state);
-	// JumpToLabel::Register(state);
+	Label::Register(state);
 	// Loop::Register(state);
 	// BreakLoop::Register(state);
 	// EndEventProcessing::Register(state);
@@ -220,7 +219,7 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	// Maniac_AddMoveRoute::Register(state);
 	// Maniac_EditTile::Register(state);
 	// Maniac_ControlTextProcessing::Register(state);
-	BindAuto<TriggerEventAt, TriggerEventAt(State&)>(state);
+	Bind<TriggerEventAt, TriggerEventAt(State&)>(state);
 
 	UnknownCommand::Register(state);
 }
