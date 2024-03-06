@@ -25,14 +25,40 @@
 
 namespace EasyScript {
 
+class ShowChoiceOption;
+
 class ShowChoice : public CommandBase<ShowChoice> {
 public:
-	ShowChoice(EasyScript::State& state);
+	ShowChoice(EasyScript::State& state, const std::string& label);
+
+	ShowChoice Cancel();
 
 	static void Register(State& state);
 
 	static constexpr std::array name = { "ShowChoice", "message", "choice" };
 	static constexpr Code code = Code::ShowChoice;
+
+	static std::optional<std::string> StringFromCommand(const EventCommandList& commands, size_t index);
 };
+
+class ShowChoiceOption : public CommandBase<ShowChoiceOption> {
+public:
+	ShowChoiceOption(EasyScript::State& state, const std::string& label, bool is_cancel);
+
+	ShowChoiceOption Cancel();
+
+	static void Register(State& state);
+
+	static constexpr std::array name = { "ShowChoiceOption", "message", "choice" };
+	static constexpr Code code = Code::ShowChoiceOption;
+
+	static std::optional<std::string> StringFromCommand(const EventCommandList& commands, size_t index, const EventCommand& parent);
+
+private:
+	int child_num = 0;
+	bool is_cancel;
+	EasyScript::EventCommand* parent = nullptr;
+};
+
 
 }

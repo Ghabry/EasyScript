@@ -36,7 +36,7 @@ public:
 
 	static void Register(State& state);
 
-	static std::optional<std::string> StringFromCommand(const EventCommand& command);
+	static std::optional<std::string> StringFromCommand(const EventCommandList& commands, size_t index, const EventCommand& parent);
 
 	Code code_end;
 };

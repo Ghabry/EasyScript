@@ -26,7 +26,7 @@
 #include <sstream>
 
 EasyScript::ShowMessage::ShowMessage(EasyScript::State& state, const std::string& value) :
-	commands(state.commands) {
+	state(state), commands(state.commands) {
 
 	std::istringstream ss(std::string{value});
 	std::string line;
@@ -58,6 +58,7 @@ EasyScript::ShowMessage::ShowMessage(EasyScript::State& state, const std::string
 EasyScript::ShowMessage EasyScript::ShowMessage::Line(const std::string& value) {
 	auto cmd = std::make_shared<EventCommand>();
 	cmd->SetDefaults(Code::ShowMessage_2, value, {});
+	cmd->indent = state.indent;
 
 	auto it = std::find(commands.begin(), commands.end(), cmd_end);
 	commands.insert(std::next(it), cmd);

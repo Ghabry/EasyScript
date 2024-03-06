@@ -16,7 +16,7 @@
  */
 
 // Todo: Branching event commands
-// ShowChoice, ShowChoiceCommand, EndChoice <- DONE
+// ShowChoice, ShowChoiceOption, ShowChoiceEnd <- DONE
 // ConditionalBranch, ElseBranch, EndBranch
 // CondionalBranch_B, ElseBranch_B, EndBranch_B
 // Loop, EndLoop
@@ -91,18 +91,6 @@ std::string build_string(const EasyScript::EventCommand& command) {
 }
 
 std::string build_unknown_string(const EasyScript::EventCommand& command) {
-	switch (command.code) {
-		case EasyScript::Code::ConditionalBranch:
-		case EasyScript::Code::ConditionalBranch_B:
-		case EasyScript::Code::Loop:
-		case EasyScript::Code::EnemyEncounter:
-		case EasyScript::Code::OpenShop:
-		case EasyScript::Code::Stay:
-			return *EasyScript::UnknownBranchCommand::StringFromCommand(command);
-		default:
-			break;
-	}
-
 	return *EasyScript::UnknownCommand::StringFromCommand(command);
 }
 
@@ -114,17 +102,19 @@ struct CommandState {
 std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 	std::vector<std::string> lines;
 	auto& commands = state.commands;
-	const EventCommand* parent;
+	std::vector<const EventCommand*> parents;
 
 	std::vector<CommandState> cmd_states = {};
 	const auto parent_commands = {Code::ShowChoice, Code::ConditionalBranch, Code::ConditionalBranch_B, Code::Loop, Code::EnemyEncounter, Code::OpenShop, Code::Stay};
+	const auto unk_parent_commands = {Code::ConditionalBranch, Code::ConditionalBranch_B, Code::Loop, Code::EnemyEncounter, Code::OpenShop, Code::Stay};
 	const auto unk_branch_commands = {Code::ElseBranch, Code::ElseBranch_B, Code::VictoryHandler, Code::EscapeHandler, Code::DefeatHandler, Code::Transaction, Code::NoTransaction, Code::NoStay};
 
 	for (size_t i = 0; i < commands.size(); ++i) {
 		auto& command = commands[i];
 
 		if (std::find(parent_commands.begin(), parent_commands.end(), command->code) != parent_commands.end()) {
-			parent = &*command;
+			parents.resize(command->indent + 1);
+			parents[command->indent] = &*command;
 		}
 
 		if (command->code == Code::ShowMessage) {
@@ -139,10 +129,15 @@ std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 				}
 			}
 			lines.push_back(*ShowMessage::StringFromCommand(sub_commands));
+		} else if (command->code == Code::ShowChoice) {
+			lines.push_back(*ShowChoice::StringFromCommand(commands, i));
+			++i;
 		} else if (command->code == Code::ShowChoiceOption) {
-			lines.push_back(*ShowChoiceOption::StringFromCommand(commands, i, *parent));
+			lines.push_back(*ShowChoiceOption::StringFromCommand(commands, i, *parents[command->indent]));
+		} else if (std::find(unk_parent_commands.begin(), unk_parent_commands.end(), command->code) != unk_parent_commands.end()) {
+			lines.push_back(*UnknownBranchCommand::StringFromCommand(commands, i, *parents[command->indent]));
 		} else if (std::find(unk_branch_commands.begin(), unk_branch_commands.end(), command->code) != unk_branch_commands.end()) {
-			lines.push_back(*UnknownElseCommand::StringFromCommand(commands, i, *parent));
+			lines.push_back(*UnknownElseCommand::StringFromCommand(commands, i, *parents[command->indent]));
 		} else {
 			lines.push_back(FromCommand(*command));
 		}
@@ -172,7 +167,7 @@ std::vector<std::string> EasyScript::FromCommandList(const std::vector<lcf::rpg:
 std::string EasyScript::FromCommand(const EventCommand& command) {
 	switch (command.code) {
 		case Code::END:
-			return "}";
+			return {};
 		case Code::CallCommonEvent:
 			return build_string<CallCommonEvent>(command);
 		//case Code::ForceFlee:
@@ -252,7 +247,7 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 		//	return build_string<ChangeSystemSFX>(command);
 		//case Code::ChangeSystemGraphics:
 		//	return build_string<ChangeSystemGraphics>(command);
-		//case Code::ChangeScreenTransitions:
+		//case Code::ChangeScinreenTransitions:
 		//	return build_string<ChangeScreenTransitions>(command);
 		//case Code::EnemyEncounter:
 		//	return build_string<EnemyEncounter>(command);
@@ -367,9 +362,8 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 		//	return build_string<EraseEvent>(command);
 		//case Code::CallEvent:
 		//	return build_string<CallEvent>(command);
-		case Code::Comment:
-			assert(false);
-			return {};
+		//case Code::Comment:
+		//	return {};
 		//case Code::GameOver:
 		//	return build_string<GameOver>(command);
 		//case Code::ReturntoTitleScreen:
@@ -398,39 +392,46 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 			return {};
 		case Code::ShowChoiceEnd:
 			return "}";
-		//case Code::VictoryHandler:
-		//	return build_string<VictoryHandler>(command);
-		//case Code::EscapeHandler:
-		//	return build_string<EscapeHandler>(command);
-		//case Code::DefeatHandler:
-		//	return build_string<DefeatHandler>(command);
-		//case Code::EndBattle:
-		//	return build_string<EndBattle>(command);
-		//case Code::Transaction:
-		//	return build_string<Transaction>(command);
-		//case Code::NoTransaction:
-		//	return build_string<NoTransaction>(command);
-		//case Code::EndShop:
-		//	return build_string<EndShop>(command);
-		//case Code::Stay:
-		//	return build_string<Stay>(command);
-		//case Code::NoStay:
-		//	return build_string<NoStay>(command);
-		//case Code::EndInn:
-		//	return build_string<EndInn>(command);
-		//case Code::ElseBranch:
-		//	return build_string<ElseBranch>(command);
-		//case Code::EndBranch:
-		//	return build_string<EndBranch>(command);
-		//case Code::EndLoop:
-		//	return build_string<EndLoop>(command);
-		case Code::Comment_2:
+		case Code::VictoryHandler:
 			assert(false);
 			return {};
-		//case Code::ElseBranch_B:
-		//	return build_string<ElseBranch_B>(command);
-		//case Code::EndBranch_B:
-		//	return build_string<EndBranch_B>(command);
+		case Code::EscapeHandler:
+			assert(false);
+			return {};
+		case Code::DefeatHandler:
+			assert(false);
+			return {};
+		case Code::EndBattle:
+			return "}";
+		case Code::Transaction:
+			assert(false);
+			return {};
+		case Code::NoTransaction:
+			assert(false);
+			return {};
+		case Code::EndShop:
+			return "}";
+		//case Code::Stay:
+		//	return build_string<Stay>(command);
+		case Code::NoStay:
+			assert(false);
+			return "}";
+		case Code::EndInn:
+			return "}";
+		case Code::ElseBranch:
+			assert(false);
+			return {};
+		case Code::EndBranch:
+			return "}";
+		case Code::EndLoop:
+			return "}";
+		//case Code::Comment_2:
+		//	return {};
+		case Code::ElseBranch_B:
+			assert(false);
+			return {};
+		case Code::EndBranch_B:
+			return "}";
 		//case Code::Maniac_GetSaveInfo:
 		//	return build_string<Maniac_GetSaveInfo>(command);
 		//case Code::Maniac_Save:

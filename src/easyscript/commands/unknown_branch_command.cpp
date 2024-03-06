@@ -27,6 +27,9 @@ EasyScript::UnknownBranchCommand::UnknownBranchCommand(State& state, int32_t val
 	: CommandBase<UnknownBranchCommand>(state) {
 	cmd->code = static_cast<Code>(value);
 
+	auto& commands = state.commands;
+	commands.push_back(cmd);
+
 	// Not really "Unknown", the list of end commands is hardcoded here
 	if (cmd->code == Code::ConditionalBranch) {
 		code_end = Code::EndBranch;
@@ -50,8 +53,6 @@ EasyScript::UnknownBranchCommand::UnknownBranchCommand(State& state, int32_t val
 		end_command->indent = state.indent;
 		state.commands.push_back(end_command);
 	}), "#block_end");
-
-	state.indent++;
 }
 
 EasyScript::UnknownBranchCommand EasyScript::UnknownBranchCommand::String(std::string string) {
@@ -70,23 +71,34 @@ void EasyScript::UnknownBranchCommand::Register(State& state) {
 		&UnknownBranchCommand::Parameter, "args");
 }
 
-std::optional<std::string> EasyScript::UnknownBranchCommand::StringFromCommand(const EventCommand& command) {
-	std::string line = std::format("@branch({})", static_cast<int>(command.code));
+std::optional<std::string> EasyScript::UnknownBranchCommand::StringFromCommand(const EventCommandList& commands, size_t index, const EventCommand& parent) {
+	auto& this_cmd = *commands[index];
+	std::string line = std::format("@branch({})", static_cast<int>(this_cmd.code));
 
-	if (!command.string.empty()) {
-		line += std::format(".string(\"{}\")", command.GetEscapedString());
+	if (!this_cmd.string.empty()) {
+		line += std::format(".string(\"{}\")", this_cmd.GetEscapedString());
 	}
 
-	if (!command.parameters.empty()) {
+	if (!this_cmd.parameters.empty()) {
 		line += ".args([";
-		for (auto& parameter: command.parameters) {
+		for (auto& parameter: this_cmd.parameters) {
 			line += std::to_string(parameter) + ",";
 		}
 		line.pop_back();
 		line += "])";
 	}
 
-	line += "{";
+	const auto branch_commands = {Code::ElseBranch, Code::ElseBranch_B, Code::EndBranch, Code::EndBranch_B, Code::EndLoop, Code::VictoryHandler, Code::EscapeHandler, Code::DefeatHandler, Code::EndBattle, Code::Transaction, Code::NoTransaction, Code::EndInn, Code::NoStay, Code::EndShop};
+
+	for (auto it = commands.begin() + index + 1; it != commands.end(); ++it) {
+		auto& cmd = **it;
+		if (cmd.indent == this_cmd.indent) {
+			if (std::find(branch_commands.begin(), branch_commands.end(), cmd.code) != branch_commands.end()) {
+				line += " {";
+			}
+			break;
+		}
+	}
 
 	return line;
 }
@@ -114,6 +126,8 @@ EasyScript::UnknownElseCommand::UnknownElseCommand(State& state, int32_t value)
 	}
 
 	auto& commands = state.commands;
+	commands.push_back(cmd);
+
 	for (auto it = commands.rbegin() + 1; it != commands.rend(); ++it) {
 		if ((*it)->indent == state.indent) {
 			if ((*it)->code == code_parent) {
@@ -156,12 +170,11 @@ void EasyScript::UnknownElseCommand::Register(State& state) {
 			state.indent--;
 		}), "#block_end");
 
-		return UnknownBranchCommand(state, value);
+		return UnknownElseCommand(state, value);
 	}), "@branch_else");
 }
 
 std::optional<std::string> EasyScript::UnknownElseCommand::StringFromCommand(const EventCommandList& commands, size_t index, const EventCommand& parent) {
-	std::string line;
 	auto& this_cmd = *commands[index];
 	int child_count = 0;
 
@@ -181,7 +194,30 @@ std::optional<std::string> EasyScript::UnknownElseCommand::StringFromCommand(con
 		}
 	}
 
-	line += std::format("@case(\"{}\") {{", this_cmd.GetEscapedString());
+	std::string line = std::format("@branch_else({})", static_cast<int>(this_cmd.code));
+
+	if (!this_cmd.string.empty()) {
+		line += std::format(".string(\"{}\")", this_cmd.GetEscapedString());
+	}
+
+	if (!this_cmd.parameters.empty()) {
+		line += ".args([";
+		for (auto& parameter: this_cmd.parameters) {
+			line += std::to_string(parameter) + ",";
+		}
+		line.pop_back();
+		line += "])";
+	}
+
+	for (auto it = commands.begin() + index + 1; it != commands.end(); ++it) {
+		auto& cmd = **it;
+		if (cmd.indent == this_cmd.indent) {
+			if (cmd.code != Code::EndBranch && cmd.code != Code::EndBranch_B && cmd.code != Code::EndLoop && cmd.code != Code::EndBattle && cmd.code != Code::EndShop && cmd.code != Code::EndInn) {
+				line += " {";
+				break;
+			}
+		}
+	}
 
 	return line;
 }

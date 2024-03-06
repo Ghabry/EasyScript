@@ -40,7 +40,7 @@ int main() {
 
 	EasyScript::EventCommand::RegisterAll(state);
 
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < 60; ++i) {
 		auto map = lcf::LMU_Reader::Load(std::format("testgame/TestGame-2000/Map00{:02}.lmu", i));
 
 		if (!map) {
@@ -58,10 +58,6 @@ int main() {
 				std::string script;
 				for (auto& line: event_lines) {
 					//std::cout << line << "\n";
-					if (line.ends_with("{")) {
-						std::cerr << "Aborted (Branches are broken)\n";
-						break;
-					}
 					script += line += "\n";
 				}
 

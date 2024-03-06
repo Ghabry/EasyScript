@@ -35,7 +35,7 @@ EasyScript::Label EasyScript::Label::Goto() {
 
 std::optional<std::string> EasyScript::Label::StringFromCommand(const EventCommand& command) {
 	std::string line = std::format("@{}", name[1]);
-	line += constructor_param.ToString(command);
+	line += "(" + constructor_param.ToString(command, false) + ")";
 
 	if (command.code == Code::JumpToLabel) {
 		line += ".goto";

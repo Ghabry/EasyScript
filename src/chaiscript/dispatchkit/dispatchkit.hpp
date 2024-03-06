@@ -1164,7 +1164,8 @@ namespace chaiscript {
             auto vec = *itr->second;
             for (const auto &func : vec) {
               if ((*t_f) == *(func)) {
-                throw chaiscript::exception::name_conflict_error(t_name);
+                funcs.data.erase(itr); // FIXME: Readd original code when #block_end is fixed
+                //throw chaiscript::exception::name_conflict_error(t_name);
               }
             }
 

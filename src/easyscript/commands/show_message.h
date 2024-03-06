@@ -40,6 +40,7 @@ public:
 	static std::optional<std::string> StringFromCommand(EventCommandList& commands);
 
 private:
+	State& state;
 	EventCommandList& commands;
 };
 

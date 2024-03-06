@@ -20,8 +20,6 @@
 #include "all_commands.h"
 #include "commands/unknown_command.h"
 #include "easyscript/binding.h"
-#include "easyscript/commands/show_choice_option.h"
-#include "easyscript/commands/unknown_branch_command.h"
 #include "state.h"
 #include "types.h"
 #include <memory>

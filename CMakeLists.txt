@@ -25,8 +25,6 @@ add_library(easyscript_lib OBJECT
 	src/easyscript/commands/play_bgm.h
 	src/easyscript/commands/play_sound.cpp
 	src/easyscript/commands/play_sound.h
-	src/easyscript/commands/show_choice_option.cpp
-	src/easyscript/commands/show_choice_option.h
 	src/easyscript/commands/show_choice.cpp
 	src/easyscript/commands/show_choice.h
 	src/easyscript/commands/show_message.cpp
