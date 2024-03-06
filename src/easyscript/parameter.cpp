@@ -114,7 +114,6 @@ std::array<int32_t, 2> EasyScript::Parameter::GetValueAndMode(const EventCommand
 }
 
 void EasyScript::Parameter::Set(EventCommand& command, EasyScript::VariableArg value) const {
-	assert(mode_idx >= 0);
 	assert(val_idx >= 0);
 
 	auto type = value.get_type_info();
@@ -126,6 +125,7 @@ void EasyScript::Parameter::Set(EventCommand& command, EasyScript::VariableArg v
 		Set(command, val);
 	} else if (type.bare_equal_type_info(typeid(Variable))) {
 		// In Variable
+		assert(mode_idx >= 0);
 		resize(parameters, val_idx);
 		resize(parameters, mode_idx);
 		if (mode_shift < 0) {
@@ -136,6 +136,7 @@ void EasyScript::Parameter::Set(EventCommand& command, EasyScript::VariableArg v
 		parameters[val_idx] = value.get().cast<std::shared_ptr<Variable>>()->id;
 	} else if (type.bare_equal_type_info(typeid(VariableIndirect))) {
 		// Indirect Variable
+		assert(mode_idx >= 0);
 		resize(parameters, val_idx);
 		resize(parameters, mode_idx);
 		if (mode_shift < 0) {

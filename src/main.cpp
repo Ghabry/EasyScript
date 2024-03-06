@@ -51,45 +51,54 @@ int main() {
 
 		for (auto& event: map->events) {
 			for (auto& page: event.pages) {
-				std::cout << std::format("{} (id={}, page={})\n", lcf::ToString(event.name), event.ID, page.ID);
+				//std::cout << std::format("{} (id={}, page={})\n", lcf::ToString(event.name), event.ID, page.ID);
 
-				bool has_error = false;
-				auto error_fn = [&](std::string_view error_msg, auto left, auto right) {
-					std::cout << std::format("{} (id={}, page={}) {}: {} != {}\n", lcf::ToString(event.name), event.ID, page.ID, error_msg, left, right);
-					has_error = true;
-				};
+				std::vector<std::pair<std::shared_ptr<EasyScript::EventCommand>, std::string>> command_trace;
 
-				state.commands = {};
+				commands = {};
 				auto event_lines = EasyScript::FromCommandList(page.event_commands);
 				for (auto& line: event_lines) {
 					//std::cout << line << "\n";
 					try {
+						size_t commands_size = commands.size();
 						chai.eval(line);
+						for (size_t i = commands_size; i < commands.size(); ++i) {
+							command_trace.emplace_back(commands[i], line);
+						}
 					} catch (chaiscript::exception::eval_error& e) {
-						std::cout << std::format("{}: {}", e.pretty_print(), line);
+						std::cerr << std::format("{}: {}", e.pretty_print(), line);
 						return 1;
 					}
 				}
 
-				if (page.event_commands.size() != state.commands.size()) {
-					error_fn("Size mismatch", page.event_commands.size(), state.commands.size());
+				bool has_error = false;
+				auto error_fn = [&](std::string_view error_msg, size_t index, auto left, auto right) {
+					std::cerr << std::format("{} (id={}, page={}) {}: {} != {}\n", lcf::ToString(event.name), event.ID, page.ID, error_msg, left, right);
+					std::cerr << "Bad command is ";
+					std::cerr << command_trace[index].second << "\n";
+					has_error = true;
+				};
+
+				if (page.event_commands.size() != commands.size()) {
+					std::cerr << std::format("Size mismatch (id={}, page={}) {}: {} != {}\n", lcf::ToString(event.name), event.ID, page.ID, page.event_commands.size(), commands.size());
+					return 1;
 				}
 
-				size_t max_value = std::min(page.event_commands.size(), state.commands.size());
+				size_t max_value = std::min(page.event_commands.size(), commands.size());
 				for (size_t i = 0; i < max_value; ++i) {
 					const auto& orig = page.event_commands[i];
-					const auto& gen = state.commands[i];
+					const auto& gen = commands[i];
 
 					if (orig.code != static_cast<int32_t>(gen->code)) {
-						error_fn(std::format("Code mismatch @ line {}", i), orig.code, static_cast<int32_t>(gen->code));
+						error_fn(std::format("Code mismatch @ line {}", i), i, orig.code, static_cast<int32_t>(gen->code));
 					}
 
 					if (orig.indent != gen->indent) {
-						error_fn(std::format("Indent mismatch @ line {}", i), orig.indent, gen->indent);
+						error_fn(std::format("Indent mismatch @ line {}", i), i, orig.indent, gen->indent);
 					}
 
 					if (orig.string != gen->string) {
-						error_fn(std::format("String mismatch @ line {}", i), lcf::ToString(orig.string), gen->string);
+						error_fn(std::format("String mismatch @ line {}", i), i, lcf::ToString(orig.string), gen->string);
 					}
 
 					if (std::vector<int32_t>(orig.parameters.begin(), orig.parameters.end()) != gen->parameters) {
@@ -106,12 +115,12 @@ int main() {
 						}
 						right.pop_back();
 						right += "]";
-						error_fn(std::format("Parameter mismatch @ line {}", i + 1), left, right);
+						error_fn(std::format("Parameter mismatch @ line {}", i + 1), i, left, right);
 					}
 				}
 
 				if (has_error) {
-					return 1;
+					break;
 				}
 			}
 		}

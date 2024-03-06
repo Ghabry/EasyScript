@@ -21,7 +21,7 @@
 #include "easyscript/event_command.h"
 
 EasyScript::ChangeFaceGraphic::ChangeFaceGraphic(EasyScript::StringArg value) {
-	cmd->SetDefaults(Code::ChangeFaceGraphic, "", { 1, 0, 0, 0 });
+	cmd->SetDefaults(Code::ChangeFaceGraphic, "", { 1, 0, 0 });
 	string_param.Set(*cmd, value);
 }
 
@@ -34,9 +34,11 @@ void EasyScript::ChangeFaceGraphic::Register(State& state) {
 		chai,
 		[&](ChangeFaceGraphic& obj) {
 			position_param.Set(*obj.cmd, 0);
+			return obj;
 		}, "left",
 		[&](ChangeFaceGraphic& obj) {
 			position_param.Set(*obj.cmd, 1);
+			return obj;
 		}, "right"
 	);
 
