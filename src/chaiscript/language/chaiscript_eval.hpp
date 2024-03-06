@@ -428,9 +428,10 @@ namespace chaiscript {
           return p;
         }();
 
-        if (params[0].is_return_value()) {
-          throw exception::eval_error("Error, cannot assign to temporary value.");
-        } else if (params[0].is_const()) {
+        // EasyScript: Allow this for nicer syntax
+        //if (params[0].is_return_value()) {
+          //throw exception::eval_error("Error, cannot assign to temporary value.");
+        /*} else */if (params[0].is_const()) {
           throw exception::eval_error("Error, cannot assign to constant value.");
         }
 

@@ -86,7 +86,7 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	// ControlSwitches::Register(state);
 	// ControlVars::Register(state);
 	// TimerOperation::Register(state);
-	// ChangeGold::Register(state);
+	ChangeGold::Register(state);
 	// ChangeItems::Register(state);
 	// ChangePartyMembers::Register(state);
 	// ChangeExp::Register(state);

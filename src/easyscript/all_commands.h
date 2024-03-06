@@ -38,7 +38,7 @@
 // ControlSwitches = 10210,
 // ControlVars = 10220,
 // TimerOperation = 10230,
-// ChangeGold = 10310,
+#include "commands/change_gold.h"
 // ChangeItems = 10320,
 // ChangePartyMembers = 10330,
 // ChangeExp = 10410,

@@ -39,6 +39,16 @@ int main() {
 	EasyScript::EventCommand::RegisterAll(state);
 
 	chai.eval(R"(
+		@party.gold += 10
+
+		@party.gold -= $v(10)
+	)");
+
+	for (auto& line: EasyScript::FromCommandList(state)) {
+		std::cout << line << "\n";
+	}
+
+	chai.eval(R"(
 		@message.choice {
 			@case("hello") {
 

@@ -44,7 +44,7 @@ std::string build_string_auto(const EasyScript::EventCommand& command) {
 	std::string line = std::format("@{}.{}", Class::name[1], Class::name[2]);
 
 	if constexpr (requires { Class::constructor_param; }) {
-		line += Class::constructor_param.ToString(command, false);
+		line += "(" + Class::constructor_param.ToString(command, false) + ")";
 	} else if constexpr (requires { Class::string_param; } ) {
 		line += Class::string_param.ToString(command);
 	}
@@ -187,8 +187,8 @@ std::string EasyScript::FromCommand(const EventCommand& command) {
 		//	return build_string<ControlVars>(command);
 		//case Code::TimerOperation:
 		//	return build_string<TimerOperation>(command);
-		//case Code::ChangeGold:
-		//	return build_string<ChangeGold>(command);
+		case Code::ChangeGold:
+			return build_string<ChangeGold>(command);
 		//case Code::ChangeItems:
 		//	return build_string<ChangeItems>(command);
 		//case Code::ChangePartyMembers:

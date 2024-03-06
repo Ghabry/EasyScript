@@ -77,7 +77,7 @@ std::string EasyScript::Parameter::ToString(const EventCommand& command, bool pr
 	if (prefix_name) {
 		return std::format(".{}({})", name, arg_str);
 	} else {
-		return std::format("({})", arg_str);
+		return arg_str;
 	}
 }
 

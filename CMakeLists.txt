@@ -14,6 +14,8 @@ add_library(easyscript_lib OBJECT
 	src/easyscript/commands/call_common_event.h
 	src/easyscript/commands/change_face_graphic.cpp
 	src/easyscript/commands/change_face_graphic.h
+	src/easyscript/commands/change_gold.cpp
+	src/easyscript/commands/change_gold.h
 	src/easyscript/commands/command_base.h
 	src/easyscript/commands/label.cpp
 	src/easyscript/commands/label.h
