@@ -35,6 +35,7 @@ EasyScript::ShowMessage::ShowMessage(EasyScript::State& state, const std::string
 
 	while (Utils::ReadLine(ss, line)) {
 		auto cmd = std::make_shared<EventCommand>();
+		cmd->indent = state.indent;
 		if (first) {
 			cmd->SetDefaults(Code::ShowMessage, line, {});
 			first = false;
@@ -46,6 +47,7 @@ EasyScript::ShowMessage::ShowMessage(EasyScript::State& state, const std::string
 
 	if (commands.empty()) {
 		auto cmd = std::make_shared<EventCommand>();
+		cmd->indent = state.indent;
 		cmd->SetDefaults(Code::ShowMessage, "", {});
 		commands.push_back(cmd);
 	}
@@ -93,9 +95,9 @@ std::optional<std::string> EasyScript::ShowMessage::StringFromCommand(EasyScript
 
 	for (auto& command: std::span(commands).subspan(1)) {
 		if (command->string.empty()) {
-			line += "\n  .newline";
+			line += ".newline";
 		} else {
-			line += std::format("\n  .line(\"{}\")", command->GetEscapedString());
+			line += std::format(".line(\"{}\")", command->GetEscapedString());
 		}
 	}
 

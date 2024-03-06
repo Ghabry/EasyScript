@@ -31,7 +31,7 @@ public:
 	static constexpr Code code = Code::CallCommonEvent;
 
 	static constexpr std::array param_default = std::to_array<uint32_t>({0});
-	static constexpr const Parameter constructor_param = {"event", 1, 0, 1};
+	static constexpr Parameter constructor_param = {"event", 1, 0, 1};
 };
 
 }

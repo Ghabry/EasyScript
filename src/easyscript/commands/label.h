@@ -34,7 +34,7 @@ public:
 	static constexpr Code code = Code::Label;
 
 	static constexpr std::array param_default = std::to_array<uint32_t>({1});
-	static constexpr const Parameter constructor_param = {"label", 1, 0, 1};
+	static constexpr Parameter constructor_param = {"label", 1, 0, 1};
 
 	static void Register(State& state);
 

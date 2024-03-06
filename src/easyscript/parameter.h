@@ -38,13 +38,20 @@ struct Parameter {
 };
 
 struct StringParameter {
+	const char* name = nullptr;
 	const char* default_val = nullptr;
 	const int32_t val_idx = -1;
 	const int32_t mode_idx = -1;
 	const int32_t mode_shift = -1;
 
+	constexpr StringParameter(const char* name, const char* default_val, int32_t val_idx = -1, int32_t mode_idx = -1, int32_t mode_shift = -1) :
+		name(name), default_val(default_val), val_idx(val_idx), mode_idx(mode_idx), mode_shift(mode_shift) {}
+
+	constexpr StringParameter(const char* default_val, int32_t val_idx = -1, int32_t mode_idx = -1, int32_t mode_shift = -1) :
+		default_val(default_val), val_idx(val_idx), mode_idx(mode_idx), mode_shift(mode_shift) {}
+
 	bool IsDefault(const EventCommand& command) const;
-	std::string ToString(const EventCommand& command) const;
+	std::string ToString(const EventCommand& command, bool prefix_name = true) const;
 	int32_t GetMode(const EventCommand& command) const;
 	void Set(EventCommand& command, EasyScript::StringArg value) const;
 	void Set(EventCommand& command, const std::string& value) const;

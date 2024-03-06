@@ -32,6 +32,7 @@
 #include "commands/play_sound.h"
 #include "commands/unknown_command.h"
 #include "commands/unknown_branch_command.h"
+#include "easyscript/parameter.h"
 #include "event_command.h"
 #include "state.h"
 
@@ -43,12 +44,16 @@
 
 template<typename Class>
 std::string build_string_auto(const EasyScript::EventCommand& command) {
-	std::string line = std::format("@{}.{}", Class::name[1], Class::name[2]);
+	std::string line = std::format("{}@{}.{}", std::string(command.indent, ' '), Class::name[1], Class::name[2]);
 
 	if constexpr (requires { Class::constructor_param; }) {
 		line += "(" + Class::constructor_param.ToString(command, false) + ")";
-	} else if constexpr (requires { Class::string_param; } ) {
-		line += Class::string_param.ToString(command);
+	}
+
+	if constexpr (requires { Class::string_param; } ) {
+		if (!Class::string_param.IsDefault(command)) {
+			line += Class::string_param.ToString(command);
+		}
 	}
 
 	if constexpr (requires { Class::param; } ) {
@@ -167,7 +172,7 @@ std::vector<std::string> EasyScript::FromCommandList(const std::vector<lcf::rpg:
 std::string EasyScript::FromCommand(const EventCommand& command) {
 	switch (command.code) {
 		case Code::END:
-			return {};
+			return "}";
 		case Code::CallCommonEvent:
 			return build_string<CallCommonEvent>(command);
 		//case Code::ForceFlee:

@@ -17,6 +17,7 @@
 
 #include "show_choice_option.h"
 #include "chaiscript/chaiscript.hpp"
+#include "chaiscript/language/chaiscript_common.hpp"
 #include "easyscript/binding.h"
 #include "easyscript/commands/command_base.h"
 #include "easyscript/event_command.h"
@@ -111,10 +112,6 @@ std::optional<std::string> EasyScript::ShowChoiceOption::StringFromCommand(const
 	int child_count = 0;
 	int cancel = parent.parameters[0];
 
-	if (index > 0) {
-		--index;
-	}
-
 	for (auto it = std::make_reverse_iterator(commands.begin() + index); it != commands.rend(); ++it) {
 		auto& cmd = **it;
 		if (cmd.indent == this_cmd.indent) {
@@ -123,13 +120,9 @@ std::optional<std::string> EasyScript::ShowChoiceOption::StringFromCommand(const
 			} else if (cmd.code == Code::ShowChoiceOption) {
 				++child_count;
 			} else {
-				throw std::runtime_error(std::format("ShowChoiceOption::StringFromCommand: Unexpected event command {}", static_cast<int>(cmd.code)));
+				throw chaiscript::exception::eval_error(std::format("ShowChoiceOption::StringFromCommand: Unexpected event command {}", static_cast<int>(cmd.code)));
 			}
 		}
-	}
-
-	if (child_count > 0) {
-		line = "} ";
 	}
 
 	if (this_cmd.parameters[0] == 4) {

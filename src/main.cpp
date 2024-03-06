@@ -53,35 +53,36 @@ int main() {
 			for (auto& page: event.pages) {
 				//std::cout << std::format("{} (id={}, page={})\n", lcf::ToString(event.name), event.ID, page.ID);
 
-				std::vector<std::pair<std::shared_ptr<EasyScript::EventCommand>, std::string>> command_trace;
-
 				commands = {};
 				auto event_lines = EasyScript::FromCommandList(page.event_commands);
+				std::string script;
 				for (auto& line: event_lines) {
 					//std::cout << line << "\n";
-					try {
-						size_t commands_size = commands.size();
-						chai.eval(line);
-						for (size_t i = commands_size; i < commands.size(); ++i) {
-							command_trace.emplace_back(commands[i], line);
-						}
-					} catch (chaiscript::exception::eval_error& e) {
-						std::cerr << std::format("{}: {}", e.pretty_print(), line);
-						return 1;
+					if (line.ends_with("{")) {
+						std::cerr << "Aborted (Branches are broken)\n";
+						break;
 					}
+					script += line += "\n";
+				}
+
+				try {
+					size_t commands_size = commands.size();
+					chai.eval(script);
+				} catch (chaiscript::exception::eval_error& e) {
+					std::cerr << std::format("{}", e.pretty_print());
+					return 1;
 				}
 
 				bool has_error = false;
 				auto error_fn = [&](std::string_view error_msg, size_t index, auto left, auto right) {
 					std::cerr << std::format("{} (id={}, page={}) {}: {} != {}\n", lcf::ToString(event.name), event.ID, page.ID, error_msg, left, right);
-					std::cerr << "Bad command is ";
-					std::cerr << command_trace[index].second << "\n";
+					std::cerr << "Bad command: " << event_lines[index];
 					has_error = true;
 				};
 
 				if (page.event_commands.size() != commands.size()) {
 					std::cerr << std::format("Size mismatch (id={}, page={}) {}: {} != {}\n", lcf::ToString(event.name), event.ID, page.ID, page.event_commands.size(), commands.size());
-					return 1;
+					break;
 				}
 
 				size_t max_value = std::min(page.event_commands.size(), commands.size());

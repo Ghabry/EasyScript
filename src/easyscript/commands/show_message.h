@@ -32,6 +32,9 @@ public:
 	// Last line belonging to the command
 	std::shared_ptr<EventCommand> cmd_end = std::make_shared<EventCommand>();
 
+	static constexpr std::array name = { "ShowMessage", "message", "show" };
+	static constexpr Code code = Code::ShowMessage;
+
 	static void Register(State& state);
 
 	static std::optional<std::string> StringFromCommand(EventCommandList& commands);

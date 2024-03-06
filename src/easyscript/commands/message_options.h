@@ -19,29 +19,32 @@
 
 #include <cstdint>
 
+#include "easyscript/commands/command_base.h"
 #include "easyscript/forward.h"
 #include "easyscript/parameter.h"
 
 namespace EasyScript {
 
-class MessageOptions {
+class MessageOptions : public CommandBase<MessageOptions> {
 public:
-	MessageOptions();
-
-	std::shared_ptr<EventCommand> cmd = std::make_shared<EventCommand>();
-
-	MessageOptions Transparent(int32_t value);
-	MessageOptions Position(int32_t value);
-	MessageOptions DynamicPosition(int32_t value);
-	MessageOptions ContinueEvents(int32_t value);
-	MessageOptions Size(int32_t width, int32_t height);
-	MessageOptions Font(StringArg font, int32_t size);
-
-	static MessageOptions FromCommand(const EventCommand& command);
-
-	static void Register(State& state);
+	MessageOptions(State& state) : CommandBase<MessageOptions>(state) {};
 
 	static constexpr std::array name = { "MessageOptions", "message", "options" };
+	static constexpr Code code = Code::MessageOptions;
+
+	static constexpr std::array param_default = std::to_array<uint32_t>({0, 0, 0, 0});
+	static constexpr std::array param = std::to_array<Parameter>({
+		{ "transparent", 0, 0 },
+		{ "position", 0, 1 },
+		{ "avoid_overlap", 0, 2},
+		{ "continue_events", 0, 3},
+		{ "w", 0, 5 },
+		{ "h", 0, 6 },
+		{ "font_size", 0, 8 }
+	});
+	static constexpr StringParameter string_param = {"font", nullptr, 7, 4, 2};
+
+	static void Register(State& state);
 };
 
 }

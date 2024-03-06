@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "easyscript/commands/command_base.h"
 #include "easyscript/forward.h"
 #include "easyscript/parameter.h"
 
@@ -24,23 +25,23 @@
 
 namespace EasyScript {
 
-class PlayBgm {
+class PlayBgm : public CommandBase<PlayBgm> {
 public:
-	PlayBgm(StringArg value);
-
-	std::shared_ptr<EventCommand> cmd = std::make_shared<EventCommand>();
+	PlayBgm(State& state, StringArg value) : CommandBase<PlayBgm>(state, value) {};
 
 	static void Register(State& state);
 
 	static constexpr std::array name = { "PlayBgm", "music", "play" };
+	static constexpr Code code = Code::PlayBGM;
 
-	static constexpr const std::array param = std::to_array<Parameter>({
+	static constexpr std::array param_default = std::to_array<uint32_t>({ 0, 100, 100, 50 });
+	static constexpr std::array param = std::to_array<Parameter>({
 		{ "fadein", 0, 0, 4, 1 },
 		{ "volume", 100, 1, 4, 2 },
 		{ "tempo", 100, 2, 4, 3 },
 		{ "balance", 50, 3, 4, 4 }
 	});
-	static constexpr const StringParameter string_param = {nullptr, 5, 4, 0};
+	static constexpr StringParameter constructor_param = {nullptr, 5, 4, 0};
 
 	static std::optional<std::string> StringFromCommand(const EventCommand& command);
 };

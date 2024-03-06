@@ -38,6 +38,12 @@ namespace detail {
 	}
 
 	template<typename Class>
+	static Class SetStringFn(const EasyScript::StringParameter& param, Class* cls, EasyScript::StringArg value) {
+		param.Set(*cls->cmd, value);
+		return *cls;
+	}
+
+	template<typename Class>
 	inline void AddFunction(chaiscript::ChaiScript&) {}
 
 	template<typename Class, typename Function, typename... Next>
@@ -67,21 +73,13 @@ namespace detail {
 	struct FunctionArgs<Ret(FirstArg, Args...)> {
 		template<typename Class>
 		chaiscript::Boxed_Value bind(State& state) {
-			if constexpr (std::is_same_v<FirstArg, State&>) {
-				chaiscript::Boxed_Value fn = chaiscript::var(chaiscript::fun([&](Args... args) {
-					auto evt = Class(state, args...);
-					state.commands.push_back(evt.cmd);
-					return evt;
-				}));
-				return fn;
-			} else {
-				chaiscript::Boxed_Value fn = chaiscript::var(chaiscript::fun([&](FirstArg arg, Args... args) {
-					auto evt = Class(arg, args...);
-					state.commands.push_back(evt.cmd);
-					return evt;
-				}));
-				return fn;
-			}
+			static_assert(std::is_same_v<FirstArg, State&>);
+			chaiscript::Boxed_Value fn = chaiscript::var(chaiscript::fun([&](Args... args) {
+				auto evt = Class(state, args...);
+				state.commands.push_back(evt.cmd);
+				return evt;
+			}));
+			return fn;
 		}
 	};
 
@@ -175,6 +173,10 @@ void Bind(EasyScript::State& state, Functions const&... f) {
 		for (auto& parameter: Class::param) {
 			chai.add(chaiscript::fun(&detail::SetFn<Class>, parameter), parameter.name);
 		}
+	}
+
+	if constexpr (requires { Class::string_param; } ) {
+		chai.add(chaiscript::fun(&detail::SetStringFn<Class>, Class::string_param), Class::string_param.name);
 	}
 }
 

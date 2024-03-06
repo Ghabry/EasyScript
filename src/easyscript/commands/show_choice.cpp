@@ -32,16 +32,5 @@ EasyScript::ShowChoice::ShowChoice(EasyScript::State& state) : CommandBase<ShowC
 }
 
 void EasyScript::ShowChoice::Register(State& state) {
-	auto& chai = state.chai;
-
-	BindConstructors<ShowChoice, ShowChoice(State&)>(
-		chai, "ShowChoice");
-
-	BindNamespaceFunctions(
-		chai, "message",
-		[&state](){
-			auto evt = ShowChoice(state);
-			return evt;
-		}, "choice"
-	);
+	Bind<ShowChoice, ShowChoice(State&)>(state);
 }

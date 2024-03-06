@@ -181,10 +181,6 @@ std::optional<std::string> EasyScript::UnknownElseCommand::StringFromCommand(con
 		}
 	}
 
-	if (child_count > 0) {
-		line = "} ";
-	}
-
 	line += std::format("@case(\"{}\") {{", this_cmd.GetEscapedString());
 
 	return line;

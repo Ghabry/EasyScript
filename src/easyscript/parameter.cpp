@@ -178,10 +178,14 @@ bool EasyScript::StringParameter::IsDefault(const EventCommand& command) const {
 		return false;
 	}
 
+	if (default_val == nullptr) {
+		return command.string.empty();
+	}
+
 	return command.string == default_val;
 }
 
-std::string EasyScript::StringParameter::ToString(const EventCommand& command) const {
+std::string EasyScript::StringParameter::ToString(const EventCommand& command, bool prefix_name) const {
 	auto& parameters = command.parameters;
 
 	int32_t mode = GetMode(command);
@@ -204,6 +208,12 @@ std::string EasyScript::StringParameter::ToString(const EventCommand& command) c
 			break;
 		break;
 	};
+
+	if (prefix_name) {
+		return std::format(".{}({})", name, arg_str);
+	} else {
+		return arg_str;
+	}
 
 	return "(" + arg_str + ")";
 }
@@ -263,7 +273,10 @@ void EasyScript::StringParameter::Set(EventCommand& command, EasyScript::StringA
 
 void EasyScript::StringParameter::Set(EventCommand& command, const std::string& value) const {
 	auto& parameters = command.parameters;
-	resize(parameters, val_idx);
+
+	if (val_idx >= 0 && parameters.size() > val_idx) {
+		parameters[val_idx] = 0;
+	}
 
 	if (mode_idx >= 0 && parameters.size() > mode_idx) {
 		if (mode_shift < 0) {

@@ -20,13 +20,10 @@
 #include "easyscript/binding.h"
 #include "easyscript/event_command.h"
 
-EasyScript::ChangeFaceGraphic::ChangeFaceGraphic(EasyScript::StringArg value) {
-	cmd->SetDefaults(Code::ChangeFaceGraphic, "", { 1, 0, 0 });
-	string_param.Set(*cmd, value);
-}
+constexpr auto& position_param = EasyScript::ChangeFaceGraphic::param[1];
 
 void EasyScript::ChangeFaceGraphic::Register(State& state) {
-	Bind<ChangeFaceGraphic, ChangeFaceGraphic(StringArg)>(state);
+	Bind<ChangeFaceGraphic, ChangeFaceGraphic(State&, StringArg)>(state);
 
 	auto& chai = state.chai;
 

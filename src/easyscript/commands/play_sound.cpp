@@ -23,20 +23,15 @@
 
 #include <format>
 
-EasyScript::PlaySound::PlaySound(StringArg value) {
-	cmd->SetDefaults(Code::PlaySound, "", { 100, 100, 50 });
-	string_param.Set(*cmd, value);
-}
-
 void EasyScript::PlaySound::Register(State& state) {
-	Bind<PlaySound, PlaySound(StringArg)>(state);
+	Bind<PlaySound, PlaySound(State&, StringArg)>(state);
 
 	auto& chai = state.chai;
 
 	BindNamespaceFunctions(
 		chai, "sound",
 		[&](){
-			auto evt = PlaySound(chaiscript::Boxed_Value(std::make_shared<const std::string>("(OFF)")));
+			auto evt = PlaySound(state, chaiscript::Boxed_Value(std::make_shared<const std::string>("(OFF)")));
 			state.commands.push_back(evt.cmd);
 			return evt;
 		}, "stop"
@@ -44,7 +39,7 @@ void EasyScript::PlaySound::Register(State& state) {
 }
 
 std::optional<std::string> EasyScript::PlaySound::StringFromCommand(const EventCommand& command) {
-	if (string_param.GetMode(command) == 0 && command.string == "(OFF)") {
+	if (constructor_param.GetMode(command) == 0 && command.string == "(OFF)") {
 		return std::format("@{}.stop", name[1]);
 	}
 

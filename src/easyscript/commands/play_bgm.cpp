@@ -24,20 +24,15 @@
 #include <format>
 #include <optional>
 
-EasyScript::PlayBgm::PlayBgm(StringArg value) {
-	cmd->SetDefaults(Code::PlayBGM, "", { 0, 100, 100, 50 });
-	string_param.Set(*cmd, value);
-}
-
 void EasyScript::PlayBgm::Register(State& state) {
-	Bind<PlayBgm, PlayBgm(StringArg)>(state);
+	Bind<PlayBgm, PlayBgm(State&, StringArg)>(state);
 
 	auto& chai = state.chai;
 
 	BindNamespaceFunctions(
 		chai, "music",
 		[&](){
-			auto evt = PlayBgm(chaiscript::Boxed_Value(std::make_shared<const std::string>("(OFF)")));
+			auto evt = PlayBgm(state, chaiscript::Boxed_Value(std::make_shared<const std::string>("(OFF)")));
 			state.commands.push_back(evt.cmd);
 			return evt;
 		}, "stop"
@@ -45,7 +40,7 @@ void EasyScript::PlayBgm::Register(State& state) {
 }
 
 std::optional<std::string> EasyScript::PlayBgm::StringFromCommand(const EventCommand& command) {
-	if (string_param.GetMode(command) == 0 && command.string == "(OFF)") {
+	if (constructor_param.GetMode(command) == 0 && command.string == "(OFF)") {
 		return "@music.stop";
 	}
 
