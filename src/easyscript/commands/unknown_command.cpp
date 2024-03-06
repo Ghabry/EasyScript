@@ -22,6 +22,11 @@
 #include "easyscript/state.h"
 #include <format>
 
+EasyScript::UnknownCommand::UnknownCommand(State& state, int32_t value)
+	: CommandBase<UnknownCommand>(state) {
+	cmd->code = static_cast<Code>(value);
+}
+
 EasyScript::UnknownCommand EasyScript::UnknownCommand::String(std::string string) {
 	cmd->string = string;
 	return *this;
@@ -42,7 +47,7 @@ std::optional<std::string> EasyScript::UnknownCommand::StringFromCommand(const E
 	std::string line = std::format("@command({})", static_cast<int>(command.code));
 
 	if (!command.string.empty()) {
-		line += std::format(".string(\"{}\")", command.string);
+		line += std::format(".string(\"{}\")", command.GetEscapedString());
 	}
 
 	if (!command.parameters.empty()) {

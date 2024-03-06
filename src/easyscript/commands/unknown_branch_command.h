@@ -24,19 +24,40 @@
 
 namespace EasyScript {
 
-class UnknownCommand : public CommandBase<UnknownCommand> {
+class UnknownBranchCommand : public CommandBase<UnknownBranchCommand> {
 public:
-	UnknownCommand(State& state, int32_t value);
+	UnknownBranchCommand(State& state, int32_t value);
 
-	UnknownCommand String(std::string string);
-	UnknownCommand Parameter(std::vector<int32_t> parameters);
+	UnknownBranchCommand String(std::string string);
+	UnknownBranchCommand Parameter(std::vector<int32_t> parameters);
 
-	static constexpr std::array name = { "UnknownCommand", "command" };
+	static constexpr std::array name = { "UnknownBranchCommand", "branch" };
 	static constexpr Code code = static_cast<Code>(-1);
 
 	static void Register(State& state);
 
 	static std::optional<std::string> StringFromCommand(const EventCommand& command);
+
+	Code code_end;
+};
+
+class UnknownElseCommand : public CommandBase<UnknownElseCommand> {
+public:
+	UnknownElseCommand(State& state, int32_t value);
+
+	UnknownElseCommand String(std::string string);
+	UnknownElseCommand Parameter(std::vector<int32_t> parameters);
+
+	static constexpr std::array name = { "UnknownElseCommand" };
+	static constexpr Code code = static_cast<Code>(-1);
+
+	static void Register(State& state);
+
+	static std::optional<std::string> StringFromCommand(const EventCommandList& commands, size_t index, const EventCommand& parent);
+
+private:
+	int child_num = 0;
+	EasyScript::EventCommand* parent = nullptr;
 };
 
 }

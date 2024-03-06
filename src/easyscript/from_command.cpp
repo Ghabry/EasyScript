@@ -22,6 +22,7 @@
 // Loop, EndLoop
 // EnemyEncounter, VictoryHandler, EscapeHandler, DefeatHandler, EndBattle
 // OpenShop, Transaction, NoTransaction, EndShop
+// Stay, NoStay, EndInn
 
 #include "from_command.h"
 #include "all_commands.h"
@@ -30,6 +31,7 @@
 #include "commands/play_bgm.h"
 #include "commands/play_sound.h"
 #include "commands/unknown_command.h"
+#include "commands/unknown_branch_command.h"
 #include "event_command.h"
 #include "state.h"
 
@@ -84,6 +86,18 @@ std::string build_string(const EasyScript::EventCommand& command) {
 }
 
 std::string build_unknown_string(const EasyScript::EventCommand& command) {
+	switch (command.code) {
+		case EasyScript::Code::ConditionalBranch:
+		case EasyScript::Code::ConditionalBranch_B:
+		case EasyScript::Code::Loop:
+		case EasyScript::Code::EnemyEncounter:
+		case EasyScript::Code::OpenShop:
+		case EasyScript::Code::Stay:
+			return *EasyScript::UnknownBranchCommand::StringFromCommand(command);
+		default:
+			break;
+	}
+
 	return *EasyScript::UnknownCommand::StringFromCommand(command);
 }
 
@@ -98,11 +112,13 @@ std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 	const EventCommand* parent;
 
 	std::vector<CommandState> cmd_states = {};
+	const auto parent_commands = {Code::ShowChoice, Code::ConditionalBranch, Code::ConditionalBranch_B, Code::Loop, Code::EnemyEncounter, Code::OpenShop, Code::Stay};
+	const auto unk_branch_commands = {Code::ElseBranch, Code::ElseBranch_B, Code::VictoryHandler, Code::EscapeHandler, Code::DefeatHandler, Code::Transaction, Code::NoTransaction, Code::NoStay};
 
 	for (size_t i = 0; i < commands.size(); ++i) {
 		auto& command = commands[i];
 
-		if (command->code == Code::ShowChoice) {
+		if (std::find(parent_commands.begin(), parent_commands.end(), command->code) != parent_commands.end()) {
 			parent = &*command;
 		}
 
@@ -120,6 +136,8 @@ std::vector<std::string> EasyScript::FromCommandList(const State& state) {
 			lines.push_back(*ShowMessage::StringFromCommand(sub_commands));
 		} else if (command->code == Code::ShowChoiceOption) {
 			lines.push_back(*ShowChoiceOption::StringFromCommand(commands, i, *parent));
+		} else if (std::find(unk_branch_commands.begin(), unk_branch_commands.end(), command->code) != unk_branch_commands.end()) {
+			lines.push_back(*UnknownElseCommand::StringFromCommand(commands, i, *parent));
 		} else {
 			lines.push_back(FromCommand(*command));
 		}

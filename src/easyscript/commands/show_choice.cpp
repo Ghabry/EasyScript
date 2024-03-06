@@ -23,16 +23,12 @@
 #include <stdexcept>
 
 EasyScript::ShowChoice::ShowChoice(EasyScript::State& state) : CommandBase<ShowChoice>(state) {
-	auto& chai = state.chai;
-
-	chai.add(chaiscript::fun([&state]() {
+	state.chai.add(chaiscript::fun([&state]() {
 		auto end_command = std::make_shared<EventCommand>();
 		end_command->code = Code::ShowChoiceEnd;
 		end_command->indent = state.indent;
 		state.commands.push_back(end_command);
 	}), "#block_end");
-
-	state.commands.push_back(cmd);
 }
 
 void EasyScript::ShowChoice::Register(State& state) {

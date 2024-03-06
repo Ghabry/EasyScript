@@ -34,6 +34,8 @@ add_library(easyscript_lib OBJECT
 	src/easyscript/commands/trigger_event_at.h
 	src/easyscript/commands/unknown_command.cpp
 	src/easyscript/commands/unknown_command.h
+	src/easyscript/commands/unknown_branch_command.cpp
+	src/easyscript/commands/unknown_branch_command.h
 	src/easyscript/event_command.cpp
 	src/easyscript/event_command.h
 	src/easyscript/forward.h

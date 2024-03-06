@@ -171,3 +171,4 @@
 // Maniac_ControlTextProcessing = 3029
 #include "commands/trigger_event_at.h"
 #include "commands/unknown_command.h"
+#include "commands/unknown_branch_command.h"

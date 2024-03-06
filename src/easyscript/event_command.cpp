@@ -21,6 +21,7 @@
 #include "commands/unknown_command.h"
 #include "easyscript/binding.h"
 #include "easyscript/commands/show_choice_option.h"
+#include "easyscript/commands/unknown_branch_command.h"
 #include "state.h"
 #include "types.h"
 #include <memory>
@@ -222,4 +223,6 @@ void EasyScript::EventCommand::RegisterAll(State& state) {
 	Bind<TriggerEventAt, TriggerEventAt(State&)>(state);
 
 	UnknownCommand::Register(state);
+	UnknownBranchCommand::Register(state);
+	UnknownElseCommand::Register(state);
 }
